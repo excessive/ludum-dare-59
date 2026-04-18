@@ -23,3 +23,7 @@ func _process(delta: float) -> void:
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	cull_mask = channel.visibility_mask
+	set_cull_mask_value(9, true)
+	set_cull_mask_value(10, true)
+	set_cull_mask_value(11, true)
+	set_cull_mask_value(12, true)

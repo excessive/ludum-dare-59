@@ -8,6 +8,7 @@
 [ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://tools/lidar_red.tres" id="5_4c57u"]
 [ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://tools/lidar_green.tres" id="6_efxa6"]
 [ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://tools/lidar_blue.tres" id="7_dg77c"]
+[ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://tools/lidar_white.tres" id="8_4c57u"]
 [ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://camera.gdshader" id="9_kek77"]
 
 [sub_resource type="GDScript" id="GDScript_gy4lr"]
@@ -199,6 +200,7 @@ collision_layer = 0
 collision_mask = 0
 script = ExtResource("3_5vw27")
 channels = Array[ExtResource("4_kek77")]([ExtResource("5_4c57u"), ExtResource("6_efxa6"), ExtResource("7_dg77c")])
+alert_channels = Array[ExtResource("4_kek77")]([ExtResource("8_4c57u")])
 sensor = NodePath("../../sensor")
 player = NodePath("../..")
 metadata/_custom_type_script = "uid://bdddwpodg4mor"
@@ -227,6 +229,7 @@ camera_attributes = SubResource("CameraAttributesPractical_0xm2m")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=411536473]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.892029, 0)
+layers = 3841
 use_collision = true
 collision_layer = 15
 size = Vector3(37.893555, 10.784058, 30.077148)
@@ -290,6 +293,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.3134
 use_collision = true
 collision_layer = 4
 collision_mask = 4
+size = Vector3(4.3203125, 4.8129883, 2.834961)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=1997544092]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.359021, 7.2399297, -1.2602086)
+use_collision = true
+collision_layer = 256
+collision_mask = 257
 size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=901928369]

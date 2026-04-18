@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="LidarChannel" format=3 uid="uid://cs1w3i27o4b6k"]
+
+[ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://tools/lidar_channel.gd" id="1_h1uxt"]
+
+[resource]
+script = ExtResource("1_h1uxt")
+collision_mask = 257
+visibility_mask = 256
+metadata/_custom_type_script = "uid://ui4apks0wqds"

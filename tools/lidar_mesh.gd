@@ -10,13 +10,16 @@ var need_update := false
 func set_limit(limit: int):
 	scanpoints.resize(limit)
 
-func change_channel(channel: LidarChannel):
-	material.albedo_color = Color.BLACK
-	material.emission = channel.color
+func clear():
 	scancursor = 0
 	scancount = 0
 	need_update = false
 	scanmesh.clear_surfaces()
+
+func set_channel(channel: LidarChannel):
+	layers = channel.visibility_mask
+	material.albedo_color = Color.BLACK
+	material.emission = channel.color
 
 func record(world_point: Vector3):
 	scancursor = wrapi(scancursor + 1, 0, scanpoints.size())
@@ -35,7 +38,7 @@ func _ready() -> void:
 	material.emission_energy_multiplier = 3
 	material.point_size = 4
 	material.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_DITHER
-	material.no_depth_test = true
+	#material.no_depth_test = true
 	material.distance_fade_min_distance = 30
 	material.distance_fade_max_distance = 15
 	material.use_point_size = true

@@ -5,6 +5,6 @@
 [resource]
 script = ExtResource("1_ig0mo")
 collision_mask = 9
-visibility_mask = 9
+visibility_mask = 8
 color = Color(0.07812985, 0.5809871, 0.89340943, 1)
 metadata/_custom_type_script = "uid://ui4apks0wqds"

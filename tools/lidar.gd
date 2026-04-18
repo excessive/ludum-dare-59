@@ -4,6 +4,8 @@ class_name LidarTool
 const LidarMesh = preload("res://tools/lidar_mesh.gd")
 
 @export var channels: Array[LidarChannel] = []
+@export var alert_channels: Array[LidarChannel] = []
+
 var current_channel := 0
 @export_range(1, 25, 0.5) var lidar_range_active: float = 25.0
 @export_range(1, 25, 0.5) var lidar_range_passive: float = 10.0
@@ -18,7 +20,6 @@ var current_channel := 0
 var lidar_charge := 1.0
 var lidar_idle := 0.0
 
-var mesh := LidarMesh.new()
 @export var sensor: Area3D
 @export var player: PhysicsBody3D
 
@@ -26,21 +27,40 @@ signal charge_updated(level: float)
 signal channel_updated(channel: LidarChannel)
 signal channel_status_updated(channel: LidarChannel)
 
-func _ready() -> void:
-	add_child(mesh)
-	mesh.set_limit(lidar_max_count)
-	mesh.global_position = Vector3.ZERO
+var meshes: Dictionary[LidarChannel, LidarMesh] = {}
 
+func _ready() -> void:
 	if channels.is_empty():
 		return
 
 	# register all the channels for UI, etc
 	for channel in channels:
+		var mesh := LidarMesh.new()
+		add_child(mesh)
+		meshes[channel] = mesh
+		mesh.set_limit(lidar_max_count)
+		mesh.set_channel(channel)
+		mesh.global_position = Vector3.ZERO
 		channel_status_updated.emit(channel)
 
+	for channel in alert_channels:
+		var mesh := LidarMesh.new()
+		add_child(mesh)
+		meshes[channel] = mesh
+		mesh.set_limit(lidar_max_count)
+		mesh.set_channel(channel)
+		mesh.global_position = Vector3.ZERO
+
 	current_channel = wrapi(current_channel, 0, channels.size())
-	channel_updated.connect(mesh.change_channel)
+	channel_updated.connect(_on_channel_changed)
 	channel_updated.emit(channels[current_channel])
+
+func _on_channel_changed(_channel: LidarChannel):
+	for mesh: LidarMesh in meshes.values():
+		mesh.clear()
+
+func _record(channel: LidarChannel, pos: Vector3):
+	meshes[channel].record(pos)
 
 func _cycle_channel(offset: int) -> bool:
 	var new_channel = wrapi(current_channel + offset, 0, channels.size())
@@ -62,8 +82,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"scan_channel_next"):
 		_try_cycle_channels(1)
 
-func _scan(active: bool):
-	var channel := channels[current_channel]
+func _scan(channel: LidarChannel, active: bool):
 	var dss := get_world_3d().direct_space_state
 	var from := global_position
 	var exclusions = [ get_rid() ]
@@ -84,7 +103,7 @@ func _scan(active: bool):
 		var ray := PhysicsRayQueryParameters3D.create(from, to, channel.visibility_mask, exclusions)
 		var hit := dss.intersect_ray(ray)
 		if hit:
-			mesh.record(hit["position"])
+			_record(channel, hit["position"])
 
 func _check_channel_blocks():
 	if not sensor:
@@ -118,7 +137,6 @@ func _check_channel_blocks():
 						#print("channel %s blocked by %s" % [channel, body])
 						channel.blocked = true
 						break
-				#mesh.record(hit["position"])
 
 		if channel.blocked:
 			if channel.blocked != was_blocked:
@@ -139,6 +157,11 @@ func _check_channel_blocks():
 		if channel.blocked != was_blocked:
 			channel_status_updated.emit(channel)
 
+func _scan_current(active: bool):
+	_scan(channels[current_channel], active)
+	for channel in alert_channels:
+		_scan(channel, active)
+
 func _physics_process(delta: float) -> void:
 	if channels.is_empty():
 		return
@@ -147,12 +170,12 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"scan"):
 		lidar_idle = 0
 		if lidar_charge > 0:
-			_scan(true)
+			_scan_current(true)
 			lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
 			charge_updated.emit(lidar_charge)
 		pass
 	else:
-		_scan(false)
+		_scan_current(false)
 		lidar_idle = minf(lidar_charge_delay, lidar_idle + delta)
 		if lidar_idle >= lidar_charge_delay:
 			lidar_charge = minf(1, lidar_charge + delta * lidar_charge_rate)

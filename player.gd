@@ -11,10 +11,10 @@ func _ready() -> void:
 func _on_area_entered(area: Area3D):
 	if area.is_in_group(&"lose_trigger"):
 		print("you died")
-		get_tree().reload_current_scene()
+		get_tree().call_deferred(&"reload_current_scene")
 	if area.is_in_group(&"win_trigger"):
 		print("you won but i have no win scene so do it again")
-		get_tree().reload_current_scene()
+		get_tree().call_deferred(&"reload_current_scene")
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
