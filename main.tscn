@@ -95,16 +95,22 @@ script/source = "extends ColorRect
 
 var glitch := 0.0
 var target_color := Color.WHITE
+var afterimage: ImageTexture
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	glitch = 1
 	target_color = channel.color
+	var vptex := get_viewport().get_texture().get_image()
+	afterimage = ImageTexture.create_from_image(vptex)
 
 func _process(delta: float) -> void:
+	if not afterimage:
+		return
 	glitch = maxf(0, glitch - delta * glitch_speed)
 	var mat := material as ShaderMaterial
 	mat.set_shader_parameter(&\"glitch\", glitch)
 	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
+	mat.set_shader_parameter(&\"glitch_afterimage\", afterimage)
 "
 
 [sub_resource type="GDScript" id="GDScript_5vw27"]
