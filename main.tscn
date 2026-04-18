@@ -11,6 +11,8 @@
 [ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://tools/lidar_white.tres" id="8_4c57u"]
 [ext_resource type="Resource" uid="uid://bywtlnxkfu5gq" path="res://tools/lidar_fog.tres" id="9_efxa6"]
 [ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://camera.gdshader" id="9_kek77"]
+[ext_resource type="Script" uid="uid://baau7noj4wh4h" path="res://addons/flickering_light/flickering_omni_light_3d.gd" id="12_dg77c"]
+[ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="13_ycdy4"]
 
 [sub_resource type="GDScript" id="GDScript_gy4lr"]
 script/source = "extends Area3D
@@ -212,14 +214,6 @@ metadata/_custom_type_script = "uid://bdddwpodg4mor"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/Camera3D/Lidar" unique_id=1108688080]
 shape = SubResource("BoxShape3D_pb6wq")
 
-[node name="SpotLight3D" type="OmniLight3D" parent="CharacterBody3D/Camera3D" unique_id=1535326419]
-visible = false
-light_color = Color(0.64705884, 0.13333334, 0.043137256, 1)
-light_energy = 0.05
-light_specular = 0.0
-omni_range = 3.0
-omni_attenuation = 2.0
-
 [node name="sensor" type="Area3D" parent="CharacterBody3D" unique_id=1265578379 groups=["player"]]
 collision_mask = 15
 monitorable = false
@@ -233,13 +227,14 @@ camera_attributes = SubResource("CameraAttributesPractical_0xm2m")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=411536473]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.892029, 0)
-layers = 3841
+layers = 1025
 use_collision = true
 collision_layer = 15
 size = Vector3(37.893555, 10.784058, 30.077148)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=1037441703]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, 1.7432251)
+layers = 0
 operation = 2
 size = Vector3(34.664063, 6.1098633, 29.004028)
 
@@ -305,6 +300,7 @@ script = SubResource("GDScript_4c57u")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=244878153]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
+layers = 0
 use_collision = true
 collision_layer = 4
 collision_mask = 4
@@ -312,6 +308,7 @@ size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=1997544092]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.359021, 7.2399297, -1.2602086)
+layers = 0
 use_collision = true
 collision_layer = 256
 collision_mask = 257
@@ -326,10 +323,10 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WinTrigger" unique_id=967954168]
 shape = SubResource("SphereShape3D_kek77")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="WinTrigger" unique_id=2117528702]
+[node name="OmniLight3D" type="OmniLight3D" parent="WinTrigger" unique_id=2089089621]
 layers = 4
 light_color = Color(0, 1, 0, 1)
-light_energy = 4.765
+light_energy = 2.0
 
 [node name="LoseTrigger" type="Area3D" parent="." unique_id=1221873663 groups=["lose_trigger"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.422677, 6.8334355, 12.660671)
@@ -340,15 +337,48 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LoseTrigger" unique_id=1348755707]
 shape = SubResource("SphereShape3D_4c57u")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="LoseTrigger" unique_id=1853197533]
+[node name="OmniLight3D" type="OmniLight3D" parent="LoseTrigger" unique_id=1075830011]
 layers = 2
 light_color = Color(1, 0.57254905, 0, 1)
-light_energy = 4.765
+light_energy = 0.431
+script = ExtResource("12_dg77c")
+speed = 12.0
+metadata/_custom_type_script = "uid://baau7noj4wh4h"
+
+[node name="Laser3D" type="Node3D" parent="." unique_id=2110481165 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.533, 6.069, -3.072)
+script = ExtResource("13_ycdy4")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="Laser3D2" type="Node3D" parent="." unique_id=327645259 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5333424, 7.068857, -3.071607)
+script = ExtResource("13_ycdy4")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="Laser3D3" type="Node3D" parent="." unique_id=44205353 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5333424, 8.068857, -3.071607)
+script = ExtResource("13_ycdy4")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
 
 [connection signal="channel_status_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/channels" method="_on_lidar_channel_status_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D/Camera3D" method="_on_lidar_channel_updated"]
-[connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="ColorRect" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/channels" method="_on_lidar_channel_updated"]
 [connection signal="charge_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_charge_updated"]

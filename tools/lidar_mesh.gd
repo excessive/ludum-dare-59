@@ -20,7 +20,8 @@ func set_channel(channel: LidarChannel):
 	if channel.haze:
 		set_limit(64)
 	layers = channel.visibility_mask
-	material.albedo_color = Color.BLACK
+	set_layer_mask_value(15, true)
+	material.albedo_color = Color.WHITE
 	material.emission = channel.color
 
 func record(world_point: Vector3):

@@ -8,6 +8,9 @@ var current_channel: LidarChannel
 
 func _ready() -> void:
 	sensor.area_entered.connect(_on_area_entered)
+	for node in get_tree().get_nodes_in_group(&"lose_trigger"):
+		if node is Laser3D:
+			node.collision_detected.connect(_on_laser_3d_collision_detected)
 
 func _on_area_entered(area: Area3D):
 	if not current_channel:
@@ -25,6 +28,7 @@ func _on_area_entered(area: Area3D):
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	collision_mask = channel.collision_mask
+	collision_layer = channel.collision_mask
 	current_channel = channel
 
 func _physics_process(delta: float) -> void:
@@ -48,3 +52,8 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, walk_speed)
 
 	move_and_slide()
+
+func _on_laser_3d_collision_detected(_collision_result: LaserResult) -> void:
+	if _collision_result.collider == self:
+		print("you died")
+		get_tree().call_deferred(&"reload_current_scene")

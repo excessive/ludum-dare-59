@@ -16,10 +16,18 @@ run/main_scene="uid://bxj8sp1skh16v"
 config/features=PackedStringArray("4.7")
 boot_splash/show_image=false
 
+[autoload]
+
+ControllerIcons="*uid://ba3e8paqa24yb"
+
 [display]
 
 window/size/viewport_width=1440
 window/size/viewport_height=720
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg", "res://addons/flickering_light/plugin.cfg", "res://addons/laser_3d/plugin.cfg")
 
 [global_group]
 
