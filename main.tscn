@@ -227,6 +227,51 @@ _data = {
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ycdy4"]
 animation = &"new_animation"
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ycdy4"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_w48qg"]
+animation = &"new_animation"
+
+[sub_resource type="Animation" id="Animation_vivmo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(10.857165, 5.8334355, 2.887442)]
+}
+
+[sub_resource type="Animation" id="Animation_2cqfq"]
+resource_name = "new_animation"
+length = 5.0
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.5666666, 5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(10.857165, 5.8334355, 2.887442), Vector3(6.4674826, 5.8334355, 9.2149935), Vector3(10.857165, 5.8334355, 2.887442)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yaehf"]
+_data = {
+&"RESET": SubResource("Animation_vivmo"),
+&"new_animation": SubResource("Animation_2cqfq")
+}
+
 [node name="Node3D" type="Node3D" unique_id=443159061]
 
 [node name="SafeArea" type="Area3D" parent="." unique_id=1398379295]
@@ -431,6 +476,22 @@ laser_layers = 2
 laser_length = 10.0
 laser_collision_mask = 2
 metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="." unique_id=397693488]
+transform = Transform3D(0.57000583, 0, 0.8216406, 0, 1, 0, -0.8216406, 0, 0.57000583, 10.857165, 5.8334355, 2.887442)
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AnimatableBody3D" unique_id=1832277145]
+shape = SubResource("BoxShape3D_ycdy4")
+
+[node name="AnimationTree" type="AnimationTree" parent="AnimatableBody3D" unique_id=1797747723]
+tree_root = SubResource("AnimationNodeAnimation_w48qg")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatableBody3D" unique_id=767203415]
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_yaehf")
 
 [connection signal="channel_status_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/channels" method="_on_lidar_channel_status_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D" method="_on_lidar_channel_updated"]
