@@ -3,7 +3,26 @@ extends CharacterBody3D
 @export var walk_speed := 5.0
 const JUMP_VELOCITY = 4.5
 
+@onready var sensor := $sensor as Area3D
+
+func _ready() -> void:
+	sensor.area_entered.connect(_on_area_entered)
+
+func _on_area_entered(area: Area3D):
+	if area.is_in_group(&"lose_trigger"):
+		print("you died")
+		get_tree().reload_current_scene()
+	if area.is_in_group(&"win_trigger"):
+		print("you won but i have no win scene so do it again")
+		get_tree().reload_current_scene()
+
 func _physics_process(delta: float) -> void:
+	sensor.collision_mask = collision_mask
+	var overlapping := sensor.get_overlapping_bodies()
+	overlapping.erase(self)
+	if not overlapping.is_empty():
+		print("blocked")
+
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 

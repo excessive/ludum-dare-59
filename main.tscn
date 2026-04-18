@@ -10,11 +10,47 @@
 [ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://tools/lidar_blue.tres" id="7_dg77c"]
 [ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://camera.gdshader" id="9_kek77"]
 
+[sub_resource type="GDScript" id="GDScript_gy4lr"]
+script/source = "extends Area3D
+
+var respawn_transforms: Dictionary[NodePath, Transform3D] = {}
+
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
+
+func _on_body_entered(node: Node3D):
+	if node.is_in_group(&\"no_respawn\"):
+		return
+
+	respawn_transforms.set(node.get_path(), node.global_transform)
+
+func _on_body_exited(node: Node3D):
+	if node.has_signal(&\"respawn\"):
+		node.respawn.emit()
+		return
+	if respawn_transforms.has(node.get_path()):
+		node.global_transform = respawn_transforms[node.get_path()]
+		node.reset_physics_interpolation()
+		if node is RigidBody3D:
+			node.linear_velocity = Vector3.ZERO
+			node.angular_velocity = Vector3.ZERO
+		return
+
+	node.queue_free()
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kek77"]
+size = Vector3(96.31079, 53.859375, 82.1228)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7dm0k"]
 radius = 0.33
 height = 1.75
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pb6wq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_efxa6"]
+radius = 0.75
 
 [sub_resource type="Environment" id="Environment_ig7tw"]
 background_mode = 1
@@ -70,7 +106,23 @@ func _process(delta: float) -> void:
 	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
 "
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_kek77"]
+radius = 2.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_4c57u"]
+radius = 2.0
+
 [node name="Node3D" type="Node3D" unique_id=443159061]
+
+[node name="SafeArea" type="Area3D" parent="." unique_id=1398379295]
+collision_layer = 0
+collision_mask = 15
+input_ray_pickable = false
+monitorable = false
+script = SubResource("GDScript_gy4lr")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SafeArea" unique_id=1651140340]
+shape = SubResource("BoxShape3D_kek77")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
@@ -93,9 +145,18 @@ metadata/_custom_type_script = "uid://bdddwpodg4mor"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/Camera3D/Lidar" unique_id=1108688080]
 shape = SubResource("BoxShape3D_pb6wq")
 
-[node name="SpotLight3D" type="SpotLight3D" parent="CharacterBody3D/Camera3D" unique_id=1488948218]
+[node name="SpotLight3D" type="OmniLight3D" parent="CharacterBody3D/Camera3D" unique_id=1535326419]
 visible = false
-spot_range = 18.780321
+light_color = Color(0.64705884, 0.13333334, 0.043137256, 1)
+light_energy = 0.05
+light_specular = 0.0
+omni_range = 3.0
+omni_attenuation = 2.0
+
+[node name="sensor" type="Area3D" parent="CharacterBody3D" unique_id=1265578379 groups=["player"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/sensor" unique_id=1059254289]
+shape = SubResource("SphereShape3D_efxa6")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1332886061]
 environment = SubResource("Environment_ig7tw")
@@ -108,9 +169,9 @@ collision_layer = 15
 size = Vector3(37.893555, 10.784058, 30.077148)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=1037441703]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, -0.26660156)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, 1.7432251)
 operation = 2
-size = Vector3(34.664063, 6.1098633, 24.984375)
+size = Vector3(34.664063, 6.1098633, 29.004028)
 
 [node name="mouse_capture_thing" type="Control" parent="." unique_id=608365050]
 layout_mode = 3
@@ -151,7 +212,6 @@ script = SubResource("GDScript_5vw27")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=244878153]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
-layers = 0
 use_collision = true
 collision_layer = 4
 collision_mask = 0
@@ -167,6 +227,30 @@ grow_vertical = 2
 mouse_filter = 2
 script = SubResource("GDScript_kek77")
 metadata/_edit_lock_ = true
+
+[node name="WinTrigger" type="Area3D" parent="." unique_id=553597636 groups=["win_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.925837, 6.8334355, 7.7454395)
+collision_layer = 4
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WinTrigger" unique_id=967954168]
+shape = SubResource("SphereShape3D_kek77")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="WinTrigger" unique_id=2117528702]
+light_color = Color(0, 1, 0, 1)
+light_energy = 4.765
+
+[node name="LoseTrigger" type="Area3D" parent="." unique_id=1221873663 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.422677, 6.8334355, 12.660671)
+collision_layer = 2
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LoseTrigger" unique_id=1348755707]
+shape = SubResource("SphereShape3D_4c57u")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="LoseTrigger" unique_id=1853197533]
+light_color = Color(1, 0.57254905, 0, 1)
+light_energy = 4.765
 
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_channel_updated"]
