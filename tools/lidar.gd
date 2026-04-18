@@ -22,23 +22,34 @@ func _ready() -> void:
 	current_channel = wrapi(current_channel, 0, channels.size())
 	mesh.change_channel(channels[current_channel])
 
-func _physics_process(_delta: float) -> void:
-	if channels.is_empty():
-		return
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"scan_channel_prev"):
+		current_channel = wrapi(current_channel - 1, 0, channels.size())
+		mesh.change_channel(channels[current_channel])
+	if event.is_action_pressed(&"scan_channel_next"):
+		current_channel = wrapi(current_channel + 1, 0, channels.size())
+		mesh.change_channel(channels[current_channel])
 
-	current_channel = wrapi(current_channel, 0, channels.size())
+func _scan():
 	var channel := channels[current_channel]
 	var dss := get_world_3d().direct_space_state
 	var from := global_position
 	var exclusions = [ get_rid() ]
 	exclusions.append_array(get_collision_exceptions())
 	for i in lidar_ray_count:
-		var r1 := randfn(0, lidar_spread/2)
+		var r1 := randf_range(-lidar_spread/2, lidar_spread/2)
 		var r2 := randf_range(0, TAU)
 		var dir := global_basis.z.rotated(global_basis.y, r1).rotated(global_basis.z, r2)
 		var to := from - dir * lidar_range
-		var ray := PhysicsRayQueryParameters3D.create(from, to, channel.collision_mask, exclusions)
+		var ray := PhysicsRayQueryParameters3D.create(from, to, channel.visibility_mask, exclusions)
 		var hit := dss.intersect_ray(ray)
 		if hit:
 			mesh.record(hit["position"])
-			#print("hit")
+
+func _physics_process(_delta: float) -> void:
+	if channels.is_empty():
+		return
+
+	current_channel = wrapi(current_channel, 0, channels.size())
+	if Input.is_action_pressed(&"scan_forward"):
+		_scan()

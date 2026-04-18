@@ -14,8 +14,6 @@ func _input(event: InputEvent) -> void:
 	if not is_captured():
 		return
 	if event is InputEventMouseMotion:
-		#turn_ignore_timer = turn_ignore_time
-		#orbit_speed_target = orbit_speed_mouse
 		turn(event.relative * mouse_sensitivity)
 		get_viewport().set_input_as_handled()
 
