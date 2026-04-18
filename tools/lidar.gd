@@ -108,6 +108,7 @@ func _scan(channel: LidarChannel, active: bool):
 		var hit := dss.intersect_ray(ray)
 		if hit:
 			var recpos: Vector3 = hit["position"]
+			recpos += hit["normal"] * 0.01
 			if channel.haze:
 				recpos = from.lerp(recpos, 0.75).lerp(recpos, randf())
 			_record(channel, recpos)
