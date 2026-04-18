@@ -185,6 +185,48 @@ radius = 2.0
 [sub_resource type="SphereShape3D" id="SphereShape3D_4c57u"]
 radius = 2.0
 
+[sub_resource type="Animation" id="Animation_ycdy4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_w48qg"]
+resource_name = "new_animation"
+length = 4.0
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5899999, 1.8000001, 2.6033335, 3.266667, 3.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, true, false, true, true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vivmo"]
+_data = {
+&"RESET": SubResource("Animation_ycdy4"),
+&"new_animation": SubResource("Animation_w48qg")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ycdy4"]
+animation = &"new_animation"
+
 [node name="Node3D" type="Node3D" unique_id=443159061]
 
 [node name="SafeArea" type="Area3D" parent="." unique_id=1398379295]
@@ -361,6 +403,14 @@ laser_layers = 2
 laser_length = 10.0
 laser_collision_mask = 2
 metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Laser3D" unique_id=18410769]
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_vivmo")
+
+[node name="AnimationTree" type="AnimationTree" parent="Laser3D" unique_id=1269216926]
+tree_root = SubResource("AnimationNodeAnimation_ycdy4")
+anim_player = NodePath("../AnimationPlayer")
 
 [node name="Laser3D2" type="Node3D" parent="." unique_id=327645259 groups=["lose_trigger"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5333424, 7.068857, -3.071607)

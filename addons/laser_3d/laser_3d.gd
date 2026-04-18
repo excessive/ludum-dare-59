@@ -378,16 +378,16 @@ func _runtime() -> void:
 	_current_collider = collider
 	
 	if is_colliding and (collider is CSGShape3D or not laser_exclude_from_the_results_report.has(collider)):
-		var collision_result: LaserResult = LaserResult.new(
-			collider,
-			_ray_cast.get_collision_point(),
-			_ray_cast.get_collision_face_index(),
-			_ray_cast.get_collision_normal(),
-			_ray_cast.get_collider_rid(),
-			_ray_cast.get_collider_shape(),
-		)
-
-		collision_detected.emit(collision_result)
+		if is_visible_in_tree():
+			var collision_result: LaserResult = LaserResult.new(
+				collider,
+				_ray_cast.get_collision_point(),
+				_ray_cast.get_collision_face_index(),
+				_ray_cast.get_collision_normal(),
+				_ray_cast.get_collider_rid(),
+				_ray_cast.get_collider_shape(),
+			)
+			collision_detected.emit(collision_result)
 
 	_mesh_visible = _visual_handle()
 
