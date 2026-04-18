@@ -17,6 +17,8 @@ func clear():
 	scanmesh.clear_surfaces()
 
 func set_channel(channel: LidarChannel):
+	if channel.haze:
+		set_limit(32)
 	layers = channel.visibility_mask
 	material.albedo_color = Color.BLACK
 	material.emission = channel.color

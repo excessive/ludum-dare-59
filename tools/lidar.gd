@@ -90,10 +90,14 @@ func _scan(channel: LidarChannel, active: bool):
 	var lidar_ray_count := lidar_ray_count_passive
 	var lidar_spread := lidar_spread_passive
 	var lidar_range := lidar_range_passive
-	if active:
+	if active and not channel.haze:
 		lidar_ray_count = lidar_ray_count_active
 		lidar_spread = lidar_spread_active
 		lidar_range = lidar_range_active
+	elif channel.haze:
+		lidar_ray_count = randi_range(0, lidar_ray_count)
+		lidar_spread = PI
+		lidar_range *= 4
 
 	for i in lidar_ray_count:
 		var r1 := randf_range(-lidar_spread/2, lidar_spread/2)
@@ -103,7 +107,13 @@ func _scan(channel: LidarChannel, active: bool):
 		var ray := PhysicsRayQueryParameters3D.create(from, to, channel.visibility_mask, exclusions)
 		var hit := dss.intersect_ray(ray)
 		if hit:
-			_record(channel, hit["position"])
+			var recpos: Vector3 = hit["position"]
+			if channel.haze:
+				recpos = from.lerp(recpos, 0.75).lerp(recpos, randf())
+			_record(channel, recpos)
+		elif channel.haze:
+			var recpos := from.lerp(to, 0.25).lerp(to, randf())
+			_record(channel, recpos)
 
 func _check_channel_blocks():
 	if not sensor:
