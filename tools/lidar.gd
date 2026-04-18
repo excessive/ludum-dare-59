@@ -18,6 +18,7 @@ var lidar_idle := 0.0
 var mesh := LidarMesh.new()
 
 signal charge_updated(level: float)
+signal channel_updated(channel: LidarChannel)
 
 func _ready() -> void:
 	add_child(mesh)
@@ -26,16 +27,18 @@ func _ready() -> void:
 
 	if channels.is_empty():
 		return
+
 	current_channel = wrapi(current_channel, 0, channels.size())
-	mesh.change_channel(channels[current_channel])
+	channel_updated.connect(mesh.change_channel)
+	channel_updated.emit(channels[current_channel])
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"scan_channel_prev"):
 		current_channel = wrapi(current_channel - 1, 0, channels.size())
-		mesh.change_channel(channels[current_channel])
+		channel_updated.emit(channels[current_channel])
 	if event.is_action_pressed(&"scan_channel_next"):
 		current_channel = wrapi(current_channel + 1, 0, channels.size())
-		mesh.change_channel(channels[current_channel])
+		channel_updated.emit(channels[current_channel])
 
 func _scan():
 	var channel := channels[current_channel]

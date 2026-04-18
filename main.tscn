@@ -116,4 +116,13 @@ grow_horizontal = 2
 mouse_filter = 2
 script = SubResource("GDScript_5vw27")
 
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=244878153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
+layers = 0
+use_collision = true
+collision_layer = 4
+collision_mask = 0
+size = Vector3(4.3203125, 4.8129883, 2.834961)
+
+[connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D" method="_on_lidar_channel_updated"]
 [connection signal="charge_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_charge_updated"]

@@ -24,3 +24,6 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, walk_speed)
 
 	move_and_slide()
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	collision_mask = channel.collision_mask
