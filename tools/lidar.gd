@@ -9,8 +9,15 @@ var current_channel := 0
 @export_range(1, 100, 1, "prefer_slider") var lidar_ray_count: int = 10
 @export_range(1, 65536, 1, "prefer_slider") var lidar_max_count: int = 16384
 @export_range(1, 90, 0.5, "radians_as_degrees") var lidar_spread: float = PI/4
+@export_range(0, 1, 0.01) var lidar_drain_rate := 0.05
+@export_range(0, 1, 0.01) var lidar_charge_rate := 0.01
+@export_range(0, 10, 0.25) var lidar_charge_delay := 2.0
+var lidar_charge := 1.0
+var lidar_idle := 0.0
 
 var mesh := LidarMesh.new()
+
+signal charge_updated(level: float)
 
 func _ready() -> void:
 	add_child(mesh)
@@ -46,10 +53,20 @@ func _scan():
 		if hit:
 			mesh.record(hit["position"])
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if channels.is_empty():
 		return
 
 	current_channel = wrapi(current_channel, 0, channels.size())
 	if Input.is_action_pressed(&"scan_forward"):
-		_scan()
+		lidar_idle = 0
+		if lidar_charge > 0:
+			_scan()
+			lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
+			charge_updated.emit(lidar_charge)
+		pass
+	else:
+		lidar_idle = minf(lidar_charge_delay, lidar_idle + delta)
+		if lidar_idle >= lidar_charge_delay:
+			lidar_charge = minf(1, lidar_charge + delta * lidar_charge_rate)
+			charge_updated.emit(lidar_charge)

@@ -31,6 +31,13 @@ fog_sky_affect = 0.0
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
 
+[sub_resource type="GDScript" id="GDScript_5vw27"]
+script/source = "extends ProgressBar
+
+func _on_lidar_charge_updated(level: float) -> void:
+	set_value_no_signal(clampf(level * 100, 0, 100))
+"
+
 [node name="Node3D" type="Node3D" unique_id=443159061]
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540]
@@ -82,3 +89,32 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_h2yge")
 metadata/_edit_lock_ = true
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="." unique_id=2039080759]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Control" type="Control" parent="AspectRatioContainer" unique_id=1168810205]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="charge" type="ProgressBar" parent="AspectRatioContainer/Control" unique_id=793066537]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -321.0
+offset_top = 24.0
+offset_right = 321.0
+offset_bottom = 51.0
+grow_horizontal = 2
+mouse_filter = 2
+value = 100.0
+script = SubResource("GDScript_5vw27")
+
+[connection signal="charge_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_charge_updated"]
