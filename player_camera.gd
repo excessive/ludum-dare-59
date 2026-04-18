@@ -20,3 +20,6 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	var lookv := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
 	turn(lookv * delta * 60)
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	cull_mask = channel.visibility_mask

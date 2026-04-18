@@ -17,16 +17,10 @@ func _on_area_entered(area: Area3D):
 		get_tree().reload_current_scene()
 
 func _physics_process(delta: float) -> void:
-	sensor.collision_mask = collision_mask
-	var overlapping := sensor.get_overlapping_bodies()
-	overlapping.erase(self)
-	if not overlapping.is_empty():
-		print("blocked")
-
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	if Input.is_action_pressed("ui_accept") and is_on_floor():
+	if Input.is_action_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	var cam := get_viewport().get_camera_3d()

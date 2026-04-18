@@ -56,15 +56,23 @@ radius = 0.75
 background_mode = 1
 ambient_light_source = 1
 tonemap_mode = 1
-tonemap_exposure = 1.25
+tonemap_exposure = 1.5
+tonemap_white = 2.0
 glow_enabled = true
 glow_levels/6 = 0.1
 glow_levels/7 = 0.2
-glow_bloom = 0.2
+glow_normalized = true
+glow_strength = 1.1
+glow_bloom = 0.5
+glow_hdr_threshold = 0.5
+glow_hdr_scale = 1.5
 fog_enabled = true
 fog_light_color = Color(0, 0, 0, 1)
 fog_density = 0.25
 fog_sky_affect = 0.0
+adjustment_enabled = true
+adjustment_brightness = 1.25
+adjustment_contrast = 1.25
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
 
@@ -82,6 +90,57 @@ func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	add_theme_stylebox_override(\"fill\", box)
 "
 
+[sub_resource type="GDScript" id="GDScript_4c57u"]
+script/source = "extends HBoxContainer
+
+class ChannelData:
+	var container: Control
+	var box: StyleBoxFlat
+	var active := false
+	func _init(channel: LidarChannel) -> void:
+		container = PanelContainer.new()
+		box = StyleBoxFlat.new()
+		box.bg_color = channel.color
+		box.set_corner_radius_all(16)
+		box.set_border_width_all(4)
+		container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		container.size_flags_vertical = Control.SIZE_FILL
+		container.add_theme_stylebox_override(&\"panel\", box)
+		container.custom_minimum_size = Vector2(24, 24)
+
+var channel_data: Dictionary[LidarChannel, ChannelData]
+
+func _get_or_add_channel(channel: LidarChannel) -> ChannelData:
+	if channel_data.has(channel):
+		return channel_data.get(channel)
+	var data := ChannelData.new(channel)
+	channel_data[channel] = data
+	add_child(data.container)
+	#print(\"added %s\" % data.container)
+	return data
+
+func _exit_tree() -> void:
+	for cd: ChannelData in channel_data.values():
+		cd.container.queue_free()
+	channel_data.clear()
+
+func _on_lidar_channel_status_updated(channel: LidarChannel) -> void:
+	var data := _get_or_add_channel(channel)
+	if channel.blocked:
+		data.box.bg_color.a = 0.1
+	else:
+		data.box.bg_color.a = 1.0
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	for ch: LidarChannel in channel_data.keys():
+		var cd := channel_data[ch]
+		cd.active = ch == channel
+		if cd.active:
+			cd.box.border_color = Color.WHITE
+		else:
+			cd.box.border_color = Color.BLACK
+"
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
 shader = ExtResource("9_kek77")
 shader_parameter/glitch = 0.0
@@ -90,7 +149,7 @@ shader_parameter/glitch_color = Color(0, 0, 0, 1)
 [sub_resource type="GDScript" id="GDScript_kek77"]
 script/source = "extends ColorRect
 
-@export var glitch_speed := 5.0
+@export var glitch_speed := 10.0
 
 var glitch := 0.0
 var target_color := Color.WHITE
@@ -124,7 +183,7 @@ script = SubResource("GDScript_gy4lr")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SafeArea" unique_id=1651140340]
 shape = SubResource("BoxShape3D_kek77")
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
 script = ExtResource("1_0xm2m")
 
@@ -135,11 +194,13 @@ shape = SubResource("CapsuleShape3D_7dm0k")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("2_1bvp3")
 
-[node name="Lidar" type="AnimatableBody3D" parent="CharacterBody3D/Camera3D" unique_id=342275928]
+[node name="Lidar" type="AnimatableBody3D" parent="CharacterBody3D/Camera3D" unique_id=342275928 node_paths=PackedStringArray("sensor", "player")]
 collision_layer = 0
 collision_mask = 0
 script = ExtResource("3_5vw27")
 channels = Array[ExtResource("4_kek77")]([ExtResource("5_4c57u"), ExtResource("6_efxa6"), ExtResource("7_dg77c")])
+sensor = NodePath("../../sensor")
+player = NodePath("../..")
 metadata/_custom_type_script = "uid://bdddwpodg4mor"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/Camera3D/Lidar" unique_id=1108688080]
@@ -154,6 +215,8 @@ omni_range = 3.0
 omni_attenuation = 2.0
 
 [node name="sensor" type="Area3D" parent="CharacterBody3D" unique_id=1265578379 groups=["player"]]
+collision_mask = 15
+monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/sensor" unique_id=1059254289]
 shape = SubResource("SphereShape3D_efxa6")
@@ -196,7 +259,6 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="charge" type="ProgressBar" parent="AspectRatioContainer/Control" unique_id=793066537]
-unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -210,11 +272,24 @@ mouse_filter = 2
 theme_override_constants/outline_size = 6
 script = SubResource("GDScript_5vw27")
 
+[node name="channels" type="HBoxContainer" parent="AspectRatioContainer/Control" unique_id=1394602365]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -77.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+script = SubResource("GDScript_4c57u")
+
 [node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=244878153]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
 use_collision = true
 collision_layer = 4
-collision_mask = 0
+collision_mask = 4
 size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=901928369]
@@ -237,6 +312,7 @@ monitoring = false
 shape = SubResource("SphereShape3D_kek77")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="WinTrigger" unique_id=2117528702]
+layers = 4
 light_color = Color(0, 1, 0, 1)
 light_energy = 4.765
 
@@ -249,10 +325,14 @@ monitoring = false
 shape = SubResource("SphereShape3D_4c57u")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="LoseTrigger" unique_id=1853197533]
+layers = 2
 light_color = Color(1, 0.57254905, 0, 1)
 light_energy = 4.765
 
+[connection signal="channel_status_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/channels" method="_on_lidar_channel_status_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="CharacterBody3D/Camera3D" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_channel_updated"]
 [connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="ColorRect" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/channels" method="_on_lidar_channel_updated"]
 [connection signal="charge_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_charge_updated"]

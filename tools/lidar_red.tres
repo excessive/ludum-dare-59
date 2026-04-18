@@ -5,6 +5,6 @@
 [resource]
 script = ExtResource("1_ie6in")
 collision_mask = 3
-visibility_mask = 2
-color = Color(0.96775836, 0.3748193, 0.12290748, 1)
+visibility_mask = 3
+color = Color(0.9908442, 0.30506372, 0.26876882, 1)
 metadata/_custom_type_script = "uid://ui4apks0wqds"
