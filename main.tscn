@@ -1,3 +1,80 @@
 [gd_scene format=3 uid="uid://bxj8sp1skh16v"]
 
+[ext_resource type="Script" uid="uid://cd2uj31vrlcph" path="res://player.gd" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://c6uoafa5duxwt" path="res://player_camera.gd" id="2_1bvp3"]
+[ext_resource type="Script" uid="uid://bdddwpodg4mor" path="res://tools/lidar.gd" id="3_5vw27"]
+[ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://mouse_capture.gd" id="3_h2yge"]
+[ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://tools/lidar_channel.gd" id="4_kek77"]
+[ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://tools/lidar_red.tres" id="5_4c57u"]
+[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://tools/lidar_green.tres" id="6_efxa6"]
+[ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://tools/lidar_blue.tres" id="7_dg77c"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7dm0k"]
+radius = 0.33
+height = 1.75
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pb6wq"]
+
+[sub_resource type="Environment" id="Environment_ig7tw"]
+background_mode = 1
+ambient_light_source = 1
+tonemap_mode = 1
+glow_enabled = true
+glow_levels/6 = 0.1
+glow_levels/7 = 0.2
+glow_intensity = 0.1
+glow_bloom = 0.1
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
+
 [node name="Node3D" type="Node3D" unique_id=443159061]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
+script = ExtResource("1_0xm2m")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=136747881]
+shape = SubResource("CapsuleShape3D_7dm0k")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=533626442]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("2_1bvp3")
+
+[node name="Lidar" type="AnimatableBody3D" parent="CharacterBody3D/Camera3D" unique_id=342275928]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("3_5vw27")
+channels = Array[ExtResource("4_kek77")]([ExtResource("5_4c57u"), ExtResource("6_efxa6"), ExtResource("7_dg77c")])
+metadata/_custom_type_script = "uid://bdddwpodg4mor"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/Camera3D/Lidar" unique_id=1108688080]
+shape = SubResource("BoxShape3D_pb6wq")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="CharacterBody3D/Camera3D" unique_id=1488948218]
+visible = false
+spot_range = 18.780321
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1332886061]
+environment = SubResource("Environment_ig7tw")
+camera_attributes = SubResource("CameraAttributesPractical_0xm2m")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=411536473]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.892029, 0)
+use_collision = true
+collision_layer = 15
+size = Vector3(37.893555, 10.784058, 30.077148)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=1037441703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, -0.26660156)
+operation = 2
+size = Vector3(34.664063, 6.1098633, 24.984375)
+
+[node name="mouse_capture_thing" type="Control" parent="." unique_id=608365050]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_h2yge")
+metadata/_edit_lock_ = true
