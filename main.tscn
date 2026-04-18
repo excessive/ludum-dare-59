@@ -35,7 +35,7 @@ fog_sky_affect = 0.0
 script/source = "extends ProgressBar
 
 func _on_lidar_charge_updated(level: float) -> void:
-	set_value_no_signal(clampf(level * 100, 0, 100))
+	set_value_no_signal(clampf((1 - level) * 100, 0, 100))
 "
 
 [node name="Node3D" type="Node3D" unique_id=443159061]
@@ -114,7 +114,6 @@ offset_right = 321.0
 offset_bottom = 51.0
 grow_horizontal = 2
 mouse_filter = 2
-value = 100.0
 script = SubResource("GDScript_5vw27")
 
 [connection signal="charge_updated" from="CharacterBody3D/Camera3D/Lidar" to="AspectRatioContainer/Control/charge" method="_on_lidar_charge_updated"]
