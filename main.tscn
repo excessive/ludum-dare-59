@@ -104,13 +104,14 @@ func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	afterimage = ImageTexture.create_from_image(vptex)
 
 func _process(delta: float) -> void:
-	if not afterimage:
-		return
 	glitch = maxf(0, glitch - delta * glitch_speed)
 	var mat := material as ShaderMaterial
 	mat.set_shader_parameter(&\"glitch\", glitch)
 	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
-	mat.set_shader_parameter(&\"glitch_afterimage\", afterimage)
+	if afterimage:
+		mat.set_shader_parameter(&\"glitch_afterimage\", afterimage)
+	if glitch <= 0:
+		afterimage = null
 "
 
 [sub_resource type="GDScript" id="GDScript_5vw27"]

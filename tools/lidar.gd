@@ -55,9 +55,13 @@ func _ready() -> void:
 	channel_updated.connect(_on_channel_changed)
 	channel_updated.emit(channels[current_channel])
 
-func _on_channel_changed(_channel: LidarChannel):
-	for mesh: LidarMesh in meshes.values():
-		mesh.clear()
+func _on_channel_changed(new_channel: LidarChannel):
+	for channel in channels:
+		var mesh := meshes[channel]
+		mesh.hide()
+	meshes[new_channel].show()
+	#for mesh: LidarMesh in meshes.values():
+		#mesh.clear()
 
 func _record(channel: LidarChannel, pos: Vector3):
 	meshes[channel].record(pos)
