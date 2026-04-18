@@ -78,6 +78,33 @@ adjustment_contrast = 1.25
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
+shader = ExtResource("9_kek77")
+shader_parameter/glitch = 0.0
+shader_parameter/barrel = -0.05000001005839999
+shader_parameter/barrel_adjust = 0.0
+shader_parameter/chromab = 0.0050000002375
+shader_parameter/glitch_color = Color(0, 0, 0, 1)
+
+[sub_resource type="GDScript" id="GDScript_kek77"]
+script/source = "extends ColorRect
+
+@export var glitch_speed := 10.0
+
+var glitch := 0.0
+var target_color := Color.WHITE
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	glitch = 1
+	target_color = channel.color
+
+func _process(delta: float) -> void:
+	glitch = maxf(0, glitch - delta * glitch_speed)
+	var mat := material as ShaderMaterial
+	mat.set_shader_parameter(&\"glitch\", glitch)
+	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
+"
+
 [sub_resource type="GDScript" id="GDScript_5vw27"]
 script/source = "extends ProgressBar
 
@@ -141,30 +168,6 @@ func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 			cd.box.border_color = Color.WHITE
 		else:
 			cd.box.border_color = Color.BLACK
-"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
-shader = ExtResource("9_kek77")
-shader_parameter/glitch = 0.0
-shader_parameter/glitch_color = Color(0, 0, 0, 1)
-
-[sub_resource type="GDScript" id="GDScript_kek77"]
-script/source = "extends ColorRect
-
-@export var glitch_speed := 10.0
-
-var glitch := 0.0
-var target_color := Color.WHITE
-
-func _on_lidar_channel_updated(channel: LidarChannel) -> void:
-	glitch = 1
-	target_color = channel.color
-
-func _process(delta: float) -> void:
-	glitch = maxf(0, glitch - delta * glitch_speed)
-	var mat := material as ShaderMaterial
-	mat.set_shader_parameter(&\"glitch\", glitch)
-	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_kek77"]
@@ -240,6 +243,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, 1.7432251)
 operation = 2
 size = Vector3(34.664063, 6.1098633, 29.004028)
 
+[node name="ColorRect" type="ColorRect" parent="." unique_id=901928369]
+material = SubResource("ShaderMaterial_4c57u")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = SubResource("GDScript_kek77")
+metadata/_edit_lock_ = true
+
 [node name="mouse_capture_thing" type="Control" parent="." unique_id=608365050]
 layout_mode = 3
 anchors_preset = 15
@@ -302,17 +316,6 @@ use_collision = true
 collision_layer = 256
 collision_mask = 257
 size = Vector3(4.3203125, 4.8129883, 2.834961)
-
-[node name="ColorRect" type="ColorRect" parent="." unique_id=901928369]
-material = SubResource("ShaderMaterial_4c57u")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = SubResource("GDScript_kek77")
-metadata/_edit_lock_ = true
 
 [node name="WinTrigger" type="Area3D" parent="." unique_id=553597636 groups=["win_trigger"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.925837, 6.8334355, 7.7454395)
