@@ -91,7 +91,7 @@ shader_parameter/glitch_color = Color(0, 0, 0, 1)
 [sub_resource type="GDScript" id="GDScript_kek77"]
 script/source = "extends ColorRect
 
-@export var glitch_speed := 10.0
+@export var glitch_speed := 8.0
 
 var glitch := 0.0
 var target_color := Color.WHITE
@@ -117,15 +117,29 @@ func _process(delta: float) -> void:
 [sub_resource type="GDScript" id="GDScript_5vw27"]
 script/source = "extends ProgressBar
 
+@export var idle_timeout := 5.0
+var idle_timer := 0.0
+
 func _on_lidar_charge_updated(level: float) -> void:
+	var old_value = value
 	set_value_no_signal(clampf((1 - level) * 100, 0, 100))
 	self_modulate = Color.WHITE.blend(Color(Color.RED, clampf(inverse_lerp(75, 95, value), 0, 1)))
+	if value != old_value:
+		idle_timer = 0.0
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	var box := StyleBoxFlat.new()
 	box.bg_color = channel.color
 	box.set_corner_radius_all(16)
 	add_theme_stylebox_override(\"fill\", box)
+
+func _process(delta: float) -> void:
+	idle_timer = minf(idle_timeout, idle_timer + delta)
+	var weight := 1.0 - exp(-5 * delta)
+	if idle_timer < idle_timeout:
+		modulate.a = lerpf(modulate.a, 1, weight)
+	else:
+		modulate.a = lerpf(modulate.a, 0, weight)
 "
 
 [sub_resource type="GDScript" id="GDScript_4c57u"]
@@ -287,6 +301,7 @@ shape = SubResource("BoxShape3D_kek77")
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1346263540 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
 script = ExtResource("1_0xm2m")
+reboot_scene = "res://reboot.tscn"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=136747881]
 shape = SubResource("CapsuleShape3D_7dm0k")
@@ -391,6 +406,11 @@ grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 script = SubResource("GDScript_4c57u")
+
+[node name="health" type="ProgressBar" parent="AspectRatioContainer/Control" unique_id=1666694899]
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 27.0
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=244878153]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)

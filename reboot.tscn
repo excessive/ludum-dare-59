@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://dhg15l3i4jque"]
+
+[ext_resource type="FontFile" uid="uid://c8aqpvoghcfod" path="res://addons/oldschool_pc_font_pack_v2.2/WebPlus_IBM_VGA_9x16.woff" id="1_qlldt"]
+[ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://camera.gdshader" id="2_upvfv"]
+[ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://mouse_capture.gd" id="4_k0lw0"]
+
+[sub_resource type="GDScript" id="GDScript_k0lw0"]
+script/source = "extends ColorRect
+
+@export_file_path(\"*.tscn\") var next_scene: String
+
+func _on_animation_player_ready(source: Node) -> void:
+	var player := (source as AnimationPlayer)
+	player.play(&\"new_animation\")
+
+func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
+	get_tree().change_scene_to_file(next_scene)
+"
+
+[sub_resource type="Animation" id="Animation_yaehf"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_074og"]
+resource_name = "new_animation"
+length = 4.8
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.47, 1.7341999, 2.46, 2.6741998, 3.23, 3.57, 3.7441998, 3.91, 3.99, 4.16, 4.3641996, 4.5299997, 4.676667, 4.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.6975116, 0.6975116, 0.81648517, 0.81648517, 0.8468118, 0.9027993, 0.9027993, 0.9121306, 0.9307931, 0.97045094, 0.97045094, 0.97978216, 1.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_cegan"]
+_data = {
+&"RESET": SubResource("Animation_yaehf"),
+&"new_animation": SubResource("Animation_074og")
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r3rol"]
+shader = ExtResource("2_upvfv")
+shader_parameter/glitch = 0.0
+shader_parameter/barrel = -0.03000001050543999
+shader_parameter/barrel_adjust = 0.0
+shader_parameter/chromab = 0.0030000001425
+shader_parameter/glitch_color = Color(0, 0, 0, 1)
+
+[node name="RebootScreen" type="ColorRect" unique_id=227557395]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+script = SubResource("GDScript_k0lw0")
+next_scene = "res://main.tscn"
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="." unique_id=173958267]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.33
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer" unique_id=1693905607]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="reboot" type="RichTextLabel" parent="AspectRatioContainer/MarginContainer" unique_id=2124835457]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 0.58431375, 0.101960786, 1)
+theme_override_fonts/normal_font = ExtResource("1_qlldt")
+text = "FROGBIOS(C)1989 Drawfrogs(R)
+EXMOE LD59 ACPI BIOS Revision 0509
+CPU : Nyoom(R) Fastboy(R) R3000000 CPU F2032 @ 5.00MHz
+  Speed : 5.03MHz  Count : 32
+  Core Temp : 213C Ext Temp : 27C
+  Rad/s : Yes      Cache : Installed
+
+RAM:
+  Bank 0: 256KiB CAS 10 BLAS 5 TLAS 2 ECC 4K UHD
+  Bank 1: 256KiB CAS 10 BLAS 5 TLAS 2 ECC 4K UHD
+  Bank 2: 256KiB CAS 10 BLAS 5 TLAS 2 ECC 4K UHD
+  Bank 3: 256KiB CAS 10 BLAS 5 TLAS 2 ECC 4K UHD
+  
+HDRAM in Single-Channel Parallel Mode
+Initializing UART Controllers .. Done.
+1048576B OK
+
+Initializing HDD Controllers .. Done.
+32768KB OK
+
+Reticulating Splines .. Done.
+
+Resuming .."
+scroll_active = false
+autowrap_mode = 1
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AspectRatioContainer/MarginContainer/reboot" unique_id=1474966277]
+libraries/ = SubResource("AnimationLibrary_cegan")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1738536012]
+material = SubResource("ShaderMaterial_r3rol")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="mouse_capture_thing" type="Control" parent="." unique_id=1207411267]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_k0lw0")
+metadata/_edit_lock_ = true
+
+[connection signal="animation_finished" from="AspectRatioContainer/MarginContainer/reboot/AnimationPlayer" to="." method="_on_animation_player_animation_finished" flags=7]
+[connection signal="ready" from="AspectRatioContainer/MarginContainer/reboot/AnimationPlayer" to="." method="_on_animation_player_ready" flags=22]

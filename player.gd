@@ -1,5 +1,6 @@
 extends CharacterBody3D
 
+@export_file_path("*.tscn") var reboot_scene: String
 @export var walk_speed := 5.0
 const JUMP_VELOCITY = 4.5
 
@@ -21,10 +22,17 @@ func _on_area_entered(area: Area3D):
 
 	if area.is_in_group(&"lose_trigger"):
 		print("you died")
-		get_tree().call_deferred(&"reload_current_scene")
+		queue_free()
 	if area.is_in_group(&"win_trigger"):
 		print("you won but i have no win scene so do it again")
-		get_tree().call_deferred(&"reload_current_scene")
+		queue_free()
+
+func _exit_tree() -> void:
+	var change_scene = reboot_scene
+	ResourceLoader.load_threaded_request(reboot_scene, "PackedScene", true)
+	var tree := get_tree()
+	await tree.process_frame
+	tree.change_scene_to_packed(ResourceLoader.load_threaded_get(change_scene))
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	collision_mask = channel.collision_mask
