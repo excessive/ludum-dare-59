@@ -22,17 +22,14 @@ func _on_area_entered(area: Area3D):
 
 	if area.is_in_group(&"lose_trigger"):
 		print("you died")
-		queue_free()
+		_reboot()
 	if area.is_in_group(&"win_trigger"):
 		print("you won but i have no win scene so do it again")
-		queue_free()
+		_reboot()
 
-func _exit_tree() -> void:
-	var change_scene = reboot_scene
-	ResourceLoader.load_threaded_request(reboot_scene, "PackedScene", true)
-	var tree := get_tree()
-	await tree.process_frame
-	tree.change_scene_to_packed(ResourceLoader.load_threaded_get(change_scene))
+func _reboot() -> void:
+	await get_tree().process_frame
+	get_tree().change_scene_to_file(reboot_scene)
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	collision_mask = channel.collision_mask
@@ -64,4 +61,4 @@ func _physics_process(delta: float) -> void:
 func _on_laser_3d_collision_detected(_collision_result: LaserResult) -> void:
 	if _collision_result.collider == self:
 		print("you died")
-		get_tree().call_deferred(&"reload_current_scene")
+		_reboot()
