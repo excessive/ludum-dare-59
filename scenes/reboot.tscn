@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dhg15l3i4jque"]
 
 [ext_resource type="FontFile" uid="uid://c8aqpvoghcfod" path="res://addons/oldschool_pc_font_pack_v2.2/WebPlus_IBM_VGA_9x16.woff" id="1_qlldt"]
-[ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://camera.gdshader" id="2_upvfv"]
-[ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://mouse_capture.gd" id="4_k0lw0"]
+[ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://materials/camera.gdshader" id="2_upvfv"]
+[ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://scripts/mouse_capture.gd" id="4_k0lw0"]
 
 [sub_resource type="GDScript" id="GDScript_k0lw0"]
 script/source = "extends ColorRect
@@ -71,7 +71,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 script = SubResource("GDScript_k0lw0")
-next_scene = "res://main.tscn"
+next_scene = "res://scenes/main.tscn"
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="." unique_id=173958267]
 layout_mode = 1

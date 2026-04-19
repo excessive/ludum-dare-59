@@ -1,0 +1,239 @@
+[gd_scene format=3 uid="uid://cvetnl6o5i21g"]
+
+[ext_resource type="Script" uid="uid://cd2uj31vrlcph" path="res://scripts/player.gd" id="1_nvl01"]
+[ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://materials/camera.gdshader" id="2_ivps1"]
+[ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://scripts/mouse_capture.gd" id="3_urp6f"]
+[ext_resource type="Script" uid="uid://c6uoafa5duxwt" path="res://scripts/player_camera.gd" id="4_bwjto"]
+[ext_resource type="Script" uid="uid://bdddwpodg4mor" path="res://scripts/lidar.gd" id="5_606se"]
+[ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://scripts/lidar_channel.gd" id="6_u1c27"]
+[ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://scripts/lidar_red.tres" id="7_op7ga"]
+[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scripts/lidar_green.tres" id="8_q13i1"]
+[ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://scripts/lidar_blue.tres" id="9_pylmc"]
+[ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://scripts/lidar_white.tres" id="10_pbfsw"]
+[ext_resource type="Resource" uid="uid://bywtlnxkfu5gq" path="res://scripts/lidar_fog.tres" id="11_5tmop"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
+shader = ExtResource("2_ivps1")
+shader_parameter/glitch = 0.0
+shader_parameter/barrel = -0.05000001005839999
+shader_parameter/barrel_adjust = 0.0
+shader_parameter/chromab = 0.0050000002375
+shader_parameter/glitch_color = Color(0, 0, 0, 1)
+
+[sub_resource type="GDScript" id="GDScript_kek77"]
+script/source = "extends ColorRect
+
+@export var glitch_speed := 8.0
+
+var glitch := 0.0
+var target_color := Color.WHITE
+var afterimage: ImageTexture
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	glitch = 1
+	target_color = channel.color
+	var vptex := get_viewport().get_texture().get_image()
+	afterimage = ImageTexture.create_from_image(vptex)
+
+func _process(delta: float) -> void:
+	glitch = maxf(0, glitch - delta * glitch_speed)
+	var mat := material as ShaderMaterial
+	mat.set_shader_parameter(&\"glitch\", glitch)
+	mat.set_shader_parameter(&\"glitch_color\", target_color * 0.25)
+	if afterimage:
+		mat.set_shader_parameter(&\"glitch_afterimage\", afterimage)
+	if glitch <= 0:
+		afterimage = null
+"
+
+[sub_resource type="GDScript" id="GDScript_5vw27"]
+script/source = "extends ProgressBar
+
+@export var idle_timeout := 5.0
+var idle_timer := 0.0
+
+func _on_lidar_charge_updated(level: float) -> void:
+	var old_value = value
+	set_value_no_signal(clampf((1 - level) * 100, 0, 100))
+	self_modulate = Color.WHITE.blend(Color(Color.RED, clampf(inverse_lerp(75, 95, value), 0, 1)))
+	if value != old_value:
+		idle_timer = 0.0
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	var box := StyleBoxFlat.new()
+	box.bg_color = channel.color
+	box.set_corner_radius_all(16)
+	add_theme_stylebox_override(\"fill\", box)
+
+func _process(delta: float) -> void:
+	idle_timer = minf(idle_timeout, idle_timer + delta)
+	var weight := 1.0 - exp(-5 * delta)
+	if idle_timer < idle_timeout:
+		modulate.a = lerpf(modulate.a, 1, weight)
+	else:
+		modulate.a = lerpf(modulate.a, 0, weight)
+"
+
+[sub_resource type="GDScript" id="GDScript_4c57u"]
+script/source = "extends HBoxContainer
+
+class ChannelData:
+	var container: Control
+	var box: StyleBoxFlat
+	var active := false
+	func _init(channel: LidarChannel) -> void:
+		container = PanelContainer.new()
+		box = StyleBoxFlat.new()
+		box.bg_color = channel.color
+		box.set_corner_radius_all(16)
+		box.set_border_width_all(4)
+		container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		container.size_flags_vertical = Control.SIZE_FILL
+		container.add_theme_stylebox_override(&\"panel\", box)
+		container.custom_minimum_size = Vector2(24, 24)
+
+var channel_data: Dictionary[LidarChannel, ChannelData]
+
+func _get_or_add_channel(channel: LidarChannel) -> ChannelData:
+	if channel_data.has(channel):
+		return channel_data.get(channel)
+	var data := ChannelData.new(channel)
+	channel_data[channel] = data
+	add_child(data.container)
+	#print(\"added %s\" % data.container)
+	return data
+
+func _exit_tree() -> void:
+	for cd: ChannelData in channel_data.values():
+		cd.container.queue_free()
+	channel_data.clear()
+
+func _on_lidar_channel_status_updated(channel: LidarChannel) -> void:
+	var data := _get_or_add_channel(channel)
+	if channel.blocked:
+		data.box.bg_color.a = 0.1
+	else:
+		data.box.bg_color.a = 1.0
+
+func _on_lidar_channel_updated(channel: LidarChannel) -> void:
+	for ch: LidarChannel in channel_data.keys():
+		var cd := channel_data[ch]
+		cd.active = ch == channel
+		if cd.active:
+			cd.box.border_color = Color.WHITE
+		else:
+			cd.box.border_color = Color.BLACK
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7dm0k"]
+radius = 0.33
+height = 1.75
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pb6wq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_efxa6"]
+radius = 0.75
+
+[node name="player" type="CharacterBody3D" unique_id=460205903 groups=["player"]]
+script = ExtResource("1_nvl01")
+reboot_scene = "res://reboot.tscn"
+
+[node name="camfx" type="ColorRect" parent="." unique_id=844979639]
+material = SubResource("ShaderMaterial_4c57u")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = SubResource("GDScript_kek77")
+metadata/_edit_lock_ = true
+
+[node name="mousething" type="Control" parent="." unique_id=121491984]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_urp6f")
+metadata/_edit_lock_ = true
+
+[node name="hud" type="AspectRatioContainer" parent="." unique_id=159637076]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Control" type="Control" parent="hud" unique_id=517231148]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="charge" type="ProgressBar" parent="hud/Control" unique_id=1988903831]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -321.0
+offset_top = 24.0
+offset_right = 321.0
+offset_bottom = 51.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+script = SubResource("GDScript_5vw27")
+
+[node name="channels" type="HBoxContainer" parent="hud/Control" unique_id=740357837]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -77.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+script = SubResource("GDScript_4c57u")
+
+[node name="health" type="ProgressBar" parent="hud/Control" unique_id=495067889]
+visible = false
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 27.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1283541795]
+shape = SubResource("CapsuleShape3D_7dm0k")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1592225126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("4_bwjto")
+
+[node name="Lidar" type="AnimatableBody3D" parent="Camera3D" unique_id=1248948536 node_paths=PackedStringArray("sensor", "player")]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_606se")
+channels = Array[ExtResource("6_u1c27")]([ExtResource("7_op7ga"), ExtResource("8_q13i1"), ExtResource("9_pylmc")])
+alert_channels = Array[ExtResource("6_u1c27")]([ExtResource("10_pbfsw"), ExtResource("11_5tmop")])
+sensor = NodePath("../../sensor")
+player = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Camera3D/Lidar" unique_id=2003371208]
+shape = SubResource("BoxShape3D_pb6wq")
+
+[node name="sensor" type="Area3D" parent="." unique_id=485549225 groups=["player"]]
+collision_mask = 15
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="sensor" unique_id=1782361973]
+shape = SubResource("SphereShape3D_efxa6")
+
+[connection signal="channel_status_updated" from="Camera3D/Lidar" to="hud/Control/channels" method="_on_lidar_channel_status_updated"]
+[connection signal="channel_updated" from="Camera3D/Lidar" to="." method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="Camera3D/Lidar" to="camfx" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="Camera3D/Lidar" to="hud/Control/charge" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="Camera3D/Lidar" to="hud/Control/channels" method="_on_lidar_channel_updated"]
+[connection signal="channel_updated" from="Camera3D/Lidar" to="Camera3D" method="_on_lidar_channel_updated"]
+[connection signal="charge_updated" from="Camera3D/Lidar" to="hud/Control/charge" method="_on_lidar_charge_updated"]

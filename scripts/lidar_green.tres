@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="LidarChannel" format=3 uid="uid://dvfglbdfr7fn2"]
 
-[ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://tools/lidar_channel.gd" id="1_g2vr5"]
+[ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://scripts/lidar_channel.gd" id="1_g2vr5"]
 
 [resource]
 script = ExtResource("1_g2vr5")

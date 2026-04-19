@@ -1,0 +1,261 @@
+[gd_scene format=3 uid="uid://bxj8sp1skh16v"]
+
+[ext_resource type="PackedScene" uid="uid://cvetnl6o5i21g" path="res://entities/player.tscn" id="1_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://dhanfsb1a4ymh" path="res://entities/win_trigger.tscn" id="2_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://bvu10fmdt27xf" path="res://entities/lose_trigger.tscn" id="3_tefeu"]
+[ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="4_o6xl0"]
+
+[sub_resource type="Environment" id="Environment_ig7tw"]
+background_mode = 1
+ambient_light_source = 1
+tonemap_mode = 1
+tonemap_exposure = 1.5
+tonemap_white = 2.0
+glow_enabled = true
+glow_levels/6 = 0.1
+glow_levels/7 = 0.2
+glow_normalized = true
+glow_strength = 1.1
+glow_bloom = 0.6
+glow_hdr_threshold = 0.5
+glow_hdr_scale = 1.5
+fog_enabled = true
+fog_light_color = Color(0, 0, 0, 1)
+fog_density = 0.25
+fog_sky_affect = 0.0
+adjustment_enabled = true
+adjustment_brightness = 1.25
+adjustment_contrast = 1.25
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
+
+[sub_resource type="Animation" id="Animation_ycdy4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_w48qg"]
+resource_name = "new_animation"
+length = 4.0
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5899999, 1.8000001, 2.6033335, 3.266667, 3.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, true, false, true, true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vivmo"]
+_data = {
+&"RESET": SubResource("Animation_ycdy4"),
+&"new_animation": SubResource("Animation_w48qg")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ycdy4"]
+animation = &"new_animation"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ycdy4"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_w48qg"]
+animation = &"new_animation"
+
+[sub_resource type="Animation" id="Animation_vivmo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(10.857165, 5.8334355, 2.887442)]
+}
+
+[sub_resource type="Animation" id="Animation_2cqfq"]
+resource_name = "new_animation"
+length = 5.0
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.5666666, 5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(10.857165, 5.8334355, 2.887442), Vector3(6.4674826, 5.8334355, 9.2149935), Vector3(10.857165, 5.8334355, 2.887442)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yaehf"]
+_data = {
+&"RESET": SubResource("Animation_vivmo"),
+&"new_animation": SubResource("Animation_2cqfq")
+}
+
+[sub_resource type="GDScript" id="GDScript_e0an3"]
+script/source = "extends Area3D
+
+var respawn_transforms: Dictionary[NodePath, Transform3D] = {}
+
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
+
+func _on_body_entered(node: Node3D):
+	if node.is_in_group(&\"no_respawn\"):
+		return
+
+	respawn_transforms.set(node.get_path(), node.global_transform)
+
+func _on_body_exited(node: Node3D):
+	if node.has_signal(&\"respawn\"):
+		node.respawn.emit()
+		return
+	if respawn_transforms.has(node.get_path()):
+		node.global_transform = respawn_transforms[node.get_path()]
+		node.reset_physics_interpolation()
+		if node is RigidBody3D:
+			node.linear_velocity = Vector3.ZERO
+			node.angular_velocity = Vector3.ZERO
+		return
+
+	node.queue_free()
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p5pve"]
+size = Vector3(96.31079, 53.859375, 82.1228)
+
+[node name="Node3D" type="Node3D" unique_id=443159061]
+
+[node name="player" parent="." unique_id=460205903 instance=ExtResource("1_jyhfs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
+reboot_scene = "res://scenes/reboot.tscn"
+
+[node name="map" type="Node3D" parent="." unique_id=1607069737]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="map" unique_id=1551208686]
+environment = SubResource("Environment_ig7tw")
+camera_attributes = SubResource("CameraAttributesPractical_0xm2m")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map" unique_id=707985030]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.892029, 0)
+layers = 1025
+use_collision = true
+collision_layer = 15
+size = Vector3(37.893555, 10.784058, 30.077148)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/CSGBox3D" unique_id=1613066063]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, 1.7432251)
+layers = 0
+operation = 2
+size = Vector3(34.664063, 6.1098633, 29.004028)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="map" unique_id=436970986]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
+layers = 0
+use_collision = true
+collision_layer = 4
+collision_mask = 4
+size = Vector3(4.3203125, 4.8129883, 2.834961)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="map" unique_id=1036366384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.359021, 7.2399297, -1.2602086)
+layers = 0
+use_collision = true
+collision_layer = 256
+collision_mask = 257
+size = Vector3(4.3203125, 4.8129883, 2.834961)
+
+[node name="WinTrigger" parent="map" unique_id=466461081 instance=ExtResource("2_tbgi4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.925837, 6.8334355, 7.7454395)
+
+[node name="LoseTrigger" parent="map" unique_id=1248599061 instance=ExtResource("3_tefeu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.422677, 6.8334355, 12.660671)
+
+[node name="Laser3D" type="Node3D" parent="map" unique_id=643731121 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.533, 6.069, -3.072)
+script = ExtResource("4_o6xl0")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="map/Laser3D" unique_id=1941645661]
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_vivmo")
+
+[node name="AnimationTree" type="AnimationTree" parent="map/Laser3D" unique_id=874689259]
+tree_root = SubResource("AnimationNodeAnimation_ycdy4")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="Laser3D2" type="Node3D" parent="map" unique_id=877759004 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5333424, 7.068857, -3.071607)
+script = ExtResource("4_o6xl0")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="Laser3D3" type="Node3D" parent="map" unique_id=1024550319 groups=["lose_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5333424, 8.068857, -3.071607)
+script = ExtResource("4_o6xl0")
+laser_color = Color(1, 0.31933156, 0.26313856, 1)
+laser_emission = 25.0
+laser_layers = 2
+laser_length = 10.0
+laser_collision_mask = 2
+metadata/_custom_type_script = "uid://b7feuq00dikpo"
+
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="map" unique_id=1913119058]
+transform = Transform3D(0.57000583, 0, 0.8216406, 0, 1, 0, -0.8216406, 0, 0.57000583, 10.857165, 5.8334355, 2.887442)
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/AnimatableBody3D" unique_id=758810908]
+shape = SubResource("BoxShape3D_ycdy4")
+
+[node name="AnimationTree" type="AnimationTree" parent="map/AnimatableBody3D" unique_id=93635322]
+tree_root = SubResource("AnimationNodeAnimation_w48qg")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="map/AnimatableBody3D" unique_id=980541038]
+deterministic = true
+libraries/ = SubResource("AnimationLibrary_yaehf")
+
+[node name="SafeArea" type="Area3D" parent="map" unique_id=1405459528]
+collision_layer = 0
+collision_mask = 15
+input_ray_pickable = false
+monitorable = false
+script = SubResource("GDScript_e0an3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/SafeArea" unique_id=1667379667]
+shape = SubResource("BoxShape3D_p5pve")

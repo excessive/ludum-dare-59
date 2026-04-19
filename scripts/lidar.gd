@@ -1,7 +1,7 @@
 extends AnimatableBody3D
 class_name LidarTool
 
-const LidarMesh = preload("res://tools/lidar_mesh.gd")
+const LidarMesh = preload("res://scripts/lidar_mesh.gd")
 
 @export var channels: Array[LidarChannel] = []
 @export var alert_channels: Array[LidarChannel] = []
