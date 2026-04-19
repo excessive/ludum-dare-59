@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dhanfsb1a4ymh" path="res://entities/win_trigger.tscn" id="2_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://bvu10fmdt27xf" path="res://entities/lose_trigger.tscn" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="4_o6xl0"]
+[ext_resource type="PackedScene" uid="uid://dngmds5nqpk3g" path="res://test/wave_screen.tscn" id="5_tbgi4"]
 
 [sub_resource type="Environment" id="Environment_ig7tw"]
 background_mode = 1
@@ -28,6 +29,12 @@ adjustment_brightness = 1.25
 adjustment_contrast = 1.25
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_jyhfs"]
+radius = 2.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jyhfs"]
+size = Vector3(4.5546875, 1, 3.7167969)
 
 [sub_resource type="Animation" id="Animation_ycdy4"]
 length = 0.001
@@ -147,7 +154,27 @@ func _on_body_exited(node: Node3D):
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p5pve"]
-size = Vector3(96.31079, 53.859375, 82.1228)
+size = Vector3(96.31079, 67.3811, 82.1228)
+
+[sub_resource type="GDScript" id="GDScript_tbgi4"]
+script/source = "extends SpotLight3D
+
+var was_aligned := false
+
+func _ready() -> void:
+	light_energy = 0
+
+func _on_wave_screen_alignment_changed(aligned: bool) -> void:
+	was_aligned = aligned
+
+func _process(delta: float) -> void:
+	if was_aligned:
+		var weight := 1.0 - exp(-5 * delta)
+		light_energy = lerpf(light_energy, 16, weight)
+	else:
+		var weight := 1.0 - exp(-2 * delta)
+		light_energy = lerpf(light_energy, 0, weight)
+"
 
 [node name="Node3D" type="Node3D" unique_id=443159061]
 
@@ -174,6 +201,24 @@ layers = 0
 operation = 2
 size = Vector3(34.664063, 6.1098633, 29.004028)
 
+[node name="CSGBox3D4" type="CSGBox3D" parent="map/CSGBox3D" unique_id=44242171]
+transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 7.2812643, -5.174194, 6.755221)
+layers = 0
+operation = 2
+use_collision = true
+collision_layer = 256
+collision_mask = 257
+size = Vector3(3.086914, 19.857178, 4.0478516)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="map/CSGBox3D" unique_id=1751612483]
+transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 4.236672, -5.174194, 12.02861)
+layers = 0
+operation = 2
+use_collision = true
+collision_layer = 256
+collision_mask = 257
+size = Vector3(3.086914, 19.857178, 4.0478516)
+
 [node name="CSGBox3D2" type="CSGBox3D" parent="map" unique_id=436970986]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.531857, 7.2399297, -7.313463)
 layers = 0
@@ -181,6 +226,14 @@ use_collision = true
 collision_layer = 4
 collision_mask = 4
 size = Vector3(4.3203125, 4.8129883, 2.834961)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="map" unique_id=1476050315]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 5.8843894, 2.4229674, 9.39792)
+layers = 0
+use_collision = true
+collision_layer = 8
+collision_mask = 8
+size = Vector3(4.46875, 4.8129883, 9.487366)
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="map" unique_id=1036366384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.359021, 7.2399297, -1.2602086)
@@ -191,10 +244,24 @@ collision_mask = 257
 size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="WinTrigger" parent="map" unique_id=466461081 instance=ExtResource("2_tbgi4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.925837, 6.8334355, 7.7454395)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.144458, 10.989936, 7.7454395)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/WinTrigger" unique_id=185996851]
+shape = SubResource("SphereShape3D_jyhfs")
 
 [node name="LoseTrigger" parent="map" unique_id=1248599061 instance=ExtResource("3_tefeu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.422677, 6.8334355, 12.660671)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1415696, 3.6754704, 11.915249)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/LoseTrigger" unique_id=1580839449]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 0, -2.3913774, 0)
+shape = SubResource("BoxShape3D_jyhfs")
+
+[node name="LoseTrigger2" parent="map" unique_id=2007747590 instance=ExtResource("3_tefeu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.165237, 3.6754704, 6.968611)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/LoseTrigger2" unique_id=1210611922]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 0, -2.3913774, 0)
+shape = SubResource("BoxShape3D_jyhfs")
 
 [node name="Laser3D" type="Node3D" parent="map" unique_id=643731121 groups=["lose_trigger"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.533, 6.069, -3.072)
@@ -259,3 +326,34 @@ script = SubResource("GDScript_e0an3")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="map/SafeArea" unique_id=1667379667]
 shape = SubResource("BoxShape3D_p5pve")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="map" unique_id=402509631]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.183977, 1.3092718, 9.679017)
+use_collision = true
+collision_layer = 4
+collision_mask = 4
+size = Vector3(22.49707, 15.361328, 10.6953125)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="map/CSGBox3D5" unique_id=498829390]
+transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -2.2254062, 8.305326, 0)
+layers = 0
+operation = 2
+use_collision = true
+collision_layer = 4
+collision_mask = 4
+size = Vector3(33.131836, 4.6600494, 27.12207)
+
+[node name="WaveScreen" parent="." unique_id=1135694422 instance=ExtResource("5_tbgi4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.9617907, 6.399395, 4.022241)
+editable = true
+
+[node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=487716335]
+transform = Transform3D(-1, 0, -8.742277e-08, -5.9647164e-08, 0.73108715, 0.68228406, 6.391367e-08, 0.68228406, -0.73108715, 0, 9.568348, 0.1408248)
+layers = 15
+light_color = Color(0.36993003, 0.67296076, 0.47801095, 1)
+light_energy = 16.0
+light_cull_mask = 4293918751
+spot_range = 7.163
+script = SubResource("GDScript_tbgi4")
+
+[connection signal="alignment_changed" from="WaveScreen" to="SpotLight3D" method="_on_wave_screen_alignment_changed"]

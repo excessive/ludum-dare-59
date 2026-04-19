@@ -4,6 +4,7 @@ extends CharacterBody3D
 @export var walk_speed := 5.0
 const JUMP_VELOCITY = 4.5
 
+@export var tool_state: ToolState
 @onready var sensor := $sensor as Area3D
 var current_channel: LidarChannel
 
@@ -37,6 +38,8 @@ func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	current_channel = channel
 
 func _physics_process(delta: float) -> void:
+	tool_state.update(delta)
+
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 

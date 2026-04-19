@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://dvggg3vbvqgmf"]
+
+[ext_resource type="FontFile" uid="uid://c8aqpvoghcfod" path="res://addons/oldschool_pc_font_pack_v2.2/WebPlus_IBM_VGA_9x16.woff" id="1_touxu"]
+
+[resource]
+default_font = ExtResource("1_touxu")

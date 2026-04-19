@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ToolState" format=3 uid="uid://xcb26g60b5mm"]
+
+[ext_resource type="Script" uid="uid://drfuh0cd83vo7" path="res://scripts/tool_state.gd" id="1_y6ulc"]
+
+[resource]
+script = ExtResource("1_y6ulc")
+metadata/_custom_type_script = "uid://drfuh0cd83vo7"

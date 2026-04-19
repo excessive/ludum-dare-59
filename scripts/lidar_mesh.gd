@@ -39,7 +39,7 @@ func _ready() -> void:
 
 	material.emission_enabled = true
 	material.emission_energy_multiplier = 3
-	material.point_size = 4
+	material.point_size = 3.5
 	material.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_DITHER
 	#material.no_depth_test = true
 	material.distance_fade_min_distance = 30

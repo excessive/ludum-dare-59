@@ -1,15 +1,9 @@
 [gd_scene format=3 uid="uid://dhanfsb1a4ymh"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_kek77"]
-radius = 2.0
-
 [node name="WinTrigger" type="Area3D" unique_id=466461081 groups=["win_trigger"]]
 collision_layer = 4
 collision_mask = 4
 monitoring = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=563976413]
-shape = SubResource("SphereShape3D_kek77")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=980610338]
 layers = 4

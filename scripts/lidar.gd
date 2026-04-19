@@ -5,6 +5,7 @@ const LidarMesh = preload("res://scripts/lidar_mesh.gd")
 
 @export var channels: Array[LidarChannel] = []
 @export var alert_channels: Array[LidarChannel] = []
+@export var tool_state: ToolState
 
 var current_channel := 0
 @export_range(1, 25, 0.5) var lidar_range_active: float = 25.0
@@ -81,6 +82,8 @@ func _try_cycle_channels(direction: int):
 			break
 
 func _input(event: InputEvent) -> void:
+	if tool_state.is_blocked():
+		return
 	if event.is_action_pressed(&"scan_channel_prev"):
 		_try_cycle_channels(-1)
 	if event.is_action_pressed(&"scan_channel_next"):
@@ -173,7 +176,8 @@ func _check_channel_blocks():
 			channel_status_updated.emit(channel)
 
 func _scan_current(active: bool):
-	_scan(channels[current_channel], active)
+	if not tool_state.is_blocked():
+		_scan(channels[current_channel], active)
 	for channel in alert_channels:
 		_scan(channel, active)
 
@@ -186,7 +190,8 @@ func _physics_process(delta: float) -> void:
 		lidar_idle = 0
 		if lidar_charge > 0:
 			_scan_current(true)
-			lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
+			if not tool_state.is_blocked():
+				lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
 			charge_updated.emit(lidar_charge)
 		pass
 	else:
