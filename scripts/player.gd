@@ -37,6 +37,7 @@ func _on_respawn(respawn_target: Transform3D):
 		print("respawn %s (%s)" % [global_position, checkpoint])
 	else:
 		global_transform = respawn_target
+	$camfx._on_lidar_channel_updated(null)
 	reset_physics_interpolation()
 	velocity *= 0
 

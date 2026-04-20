@@ -8,13 +8,18 @@
 script/source = "extends ColorRect
 
 @export_file_path(\"*.tscn\") var next_scene: String
+@export var dev_splash_skip := true
+@onready var editor_skip := OS.has_feature(\"editor\") and Hoarder.first_load and dev_splash_skip
 
 func _on_animation_player_ready(source: Node) -> void:
+	if editor_skip:
+		_on_animation_player_animation_finished(&\"new_animation\")
+		return
 	var player := (source as AnimationPlayer)
 	player.play(&\"new_animation\")
 
 func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
-	get_tree().change_scene_to_file(next_scene)
+	ScreenTransition.auto_transition_threaded(next_scene)
 "
 
 [sub_resource type="Animation" id="Animation_yaehf"]

@@ -3,7 +3,7 @@ extends PanelContainer
 
 signal path_selected(path: String)
 
-@onready var n_tab_container := %TabContainer
+@onready var n_tab_container: TabContainer = %TabContainer
 @onready var n_input_action := %"Input Action"
 @onready var n_joypad_path := %"Joypad Path"
 @onready var n_specific_path := %"Specific Path"
@@ -28,6 +28,8 @@ func get_icon_path() -> String:
 
 
 func _on_tab_container_tab_selected(tab = null) -> void:
+	if not n_tab_container:
+		return
 	match n_tab_container.get_current_tab_control():
 		n_input_action:
 			if not input_action_populated:

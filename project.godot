@@ -12,7 +12,7 @@ config_version=5
 
 config/name="ludum dare 59"
 config/description="maybe we'll get a nice theme for ld69"
-run/main_scene="uid://dhg15l3i4jque"
+run/main_scene="uid://c0wxk1faqipeb"
 config/features=PackedStringArray("4.7")
 boot_splash/bg_color=Color(0.0627451, 0.0627451, 0.0627451, 1)
 boot_splash/show_image=false
@@ -21,6 +21,7 @@ boot_splash/show_image=false
 
 ControllerIcons="*uid://ba3e8paqa24yb"
 Hoarder="*uid://bgmolqwd0hpo"
+ScreenTransition="*uid://ej7wkcbq6a57"
 
 [display]
 
