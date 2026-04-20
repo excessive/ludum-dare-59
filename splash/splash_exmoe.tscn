@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://wal63nvqfkn7" path="res://splash/textures/logo-exmoe.png" id="1_y4w51"]
 [ext_resource type="Texture2D" uid="uid://cp7h003mimci" path="res://splash/textures/logo_large_monochrome_dark.svg" id="3_qtvqm"]
 [ext_resource type="Texture2D" uid="uid://duc842elw2rtq" path="res://splash/textures/flair_circle_1.svg" id="3_wjakx"]
+[ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="5_fgcb4"]
 
 [sub_resource type="Animation" id="Animation_u6a87"]
 length = 0.001
@@ -170,7 +171,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dip8n")
-next_scene_path = "uid://dhg15l3i4jque"
+next_scene_path = "uid://cgvu1wrixw5nt"
+dev_splash_skip = false
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1148975549]
 layout_mode = 1
@@ -250,3 +252,7 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3_qtvqm")
 expand_mode = 1
+
+[node name="AutoReleaseMouse" type="Node" parent="." unique_id=1844973648]
+script = ExtResource("5_fgcb4")
+metadata/_custom_type_script = "uid://cvm75b82n21ak"

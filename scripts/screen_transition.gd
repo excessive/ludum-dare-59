@@ -10,12 +10,6 @@ var quit_after_transition_out := false
 const FADE_IN := preload("res://scenes/transitions/fade_in.tscn")
 const FADE_OUT := preload("res://scenes/transitions/fade_out.tscn")
 
-enum TransitionMode {
-	In, # switches, then uncovers
-	Out, # covers, then switches
-	Full, # Out, then In
-}
-
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
@@ -28,6 +22,7 @@ func _run_transition():
 	# make sure not to switch mid-frame
 	await get_tree().process_frame
 	if quit_after_transition_out:
+		get_tree().auto_accept_quit = true
 		get_tree().quit()
 
 	if _next_scene_path:

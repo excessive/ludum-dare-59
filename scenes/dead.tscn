@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://hjtnud71drwr"]
+
+[ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="1_pheag"]
+[ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="2_4orh1"]
+
+[node name="Dead" type="Control" unique_id=141256512]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1405651979]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -111.5
+offset_top = -34.0
+offset_right = 111.5
+offset_bottom = 34.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="load" type="Button" parent="VBoxContainer" unique_id=1657680867]
+layout_mode = 2
+text = "LOAD_CHECKPOINT"
+script = ExtResource("1_pheag")
+target_screen = "uid://dhg15l3i4jque"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="return" type="Button" parent="VBoxContainer" unique_id=323006829]
+layout_mode = 2
+text = "RETURN_MENU"
+script = ExtResource("1_pheag")
+target_screen = "uid://cgvu1wrixw5nt"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="AutoReleaseMouse" type="Node" parent="." unique_id=1637590586]
+script = ExtResource("2_4orh1")
+metadata/_custom_type_script = "uid://cvm75b82n21ak"

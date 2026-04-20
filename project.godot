@@ -136,6 +136,11 @@ crouch={
 ]
 }
 
+[internationalization]
+
+locale/translation_remaps={}
+locale/translations=PackedStringArray("res://lang/translation.en.translation")
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://d24jnlk3p7x4r"]
+
+[ext_resource type="Script" uid="uid://26tsmsj3p0xg" path="res://scenes/pause_menu.gd" id="1_myx47"]
+[ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="2_kukqi"]
+[ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="3_kukqi"]
+
+[node name="PauseMenu" type="Control" unique_id=1702353532]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_myx47")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=523702428]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -111.5
+offset_top = -70.0
+offset_right = 111.5
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="continue" type="Button" parent="VBoxContainer" unique_id=1961859567]
+layout_mode = 2
+text = "RESUME_GAME"
+
+[node name="load" type="Button" parent="VBoxContainer" unique_id=1266765513]
+layout_mode = 2
+text = "LOAD_CHECKPOINT"
+script = ExtResource("2_kukqi")
+target_screen = "uid://dhg15l3i4jque"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="options" type="Button" parent="VBoxContainer" unique_id=1171759169]
+visible = false
+layout_mode = 2
+text = "OPTIONS"
+script = ExtResource("2_kukqi")
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="return" type="Button" parent="VBoxContainer" unique_id=2026759038]
+layout_mode = 2
+text = "RETURN_MENU"
+script = ExtResource("2_kukqi")
+target_screen = "uid://cgvu1wrixw5nt"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="AutoReleaseMouse" type="Node" parent="." unique_id=372008485]
+script = ExtResource("3_kukqi")
+metadata/_custom_type_script = "uid://cvm75b82n21ak"
+
+[connection signal="pressed" from="VBoxContainer/continue" to="." method="_on_continue_pressed"]

@@ -152,7 +152,8 @@ radius = 0.75
 
 [node name="player" type="CharacterBody3D" unique_id=460205903 groups=["player"]]
 script = ExtResource("1_nvl01")
-reboot_scene = "res://reboot.tscn"
+victory_scene = "res://scenes/victory.tscn"
+death_scene = "res://scenes/dead.tscn"
 tool_state = ExtResource("12_dchgp")
 player_state = ExtResource("3_kdgjc")
 

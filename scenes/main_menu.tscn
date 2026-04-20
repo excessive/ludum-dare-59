@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://cgvu1wrixw5nt"]
+
+[ext_resource type="Script" uid="uid://bjmkdekv1y14a" path="res://scripts/main_menu.gd" id="1_ekxnf"]
+[ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="1_l6cm7"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scenes/data/player_state.tres" id="2_bqqt6"]
+[ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="4_wu84c"]
+
+[node name="MainMenu" type="Control" unique_id=792936880]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ekxnf")
+player_state = ExtResource("2_bqqt6")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=551405936]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -44.0
+offset_top = -88.0
+offset_right = 44.0
+offset_bottom = 88.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="new" type="Button" parent="VBoxContainer" unique_id=605297390]
+layout_mode = 2
+text = "NEW_GAME"
+script = ExtResource("1_l6cm7")
+target_screen = "uid://dhg15l3i4jque"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="continue" type="Button" parent="VBoxContainer" unique_id=214241905]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "RESUME_GAME"
+script = ExtResource("1_l6cm7")
+target_screen = "uid://dhg15l3i4jque"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="options" type="Button" parent="VBoxContainer" unique_id=405526778]
+visible = false
+layout_mode = 2
+text = "OPTIONS"
+script = ExtResource("1_l6cm7")
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="credits" type="Button" parent="VBoxContainer" unique_id=889295322]
+layout_mode = 2
+disabled = true
+text = "CREDITS"
+script = ExtResource("1_l6cm7")
+target_screen = "uid://cplc8nqsm0jex"
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="quit" type="Button" parent="VBoxContainer" unique_id=1436098000]
+layout_mode = 2
+text = "QUIT_GAME"
+script = ExtResource("1_l6cm7")
+target_screen = "uid://c0wxk1faqipeb"
+quit_after_transition_out = true
+metadata/_custom_type_script = "uid://qqts5666b3ad"
+
+[node name="AutoReleaseMouse" type="Node" parent="." unique_id=1447535033]
+script = ExtResource("4_wu84c")
+metadata/_custom_type_script = "uid://cvm75b82n21ak"
+
+[connection signal="pressed" from="VBoxContainer/new" to="." method="_on_new_pressed"]

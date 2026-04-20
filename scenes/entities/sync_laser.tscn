@@ -18,10 +18,10 @@ func _update():
 		unlock = not unlock
 	if unlock:
 		laser.laser_active = false
-		laser.laser_type_visible = Laser3D.LASER_VISIBLE_OFF
+		laser.laser_type_visible = Laser3D.LASER_VISIBLE_OFF as Laser3D.laser_visible
 	else:
 		laser.laser_active = true
-		laser.laser_type_visible = Laser3D.LASER_ALWAYS_VISIBLE
+		laser.laser_type_visible = Laser3D.LASER_ALWAYS_VISIBLE as Laser3D.laser_visible
 	laser.laser_length = length
 	if channel:
 		laser.laser_color = channel.color

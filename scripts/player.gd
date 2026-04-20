@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
-@export_file_path("*.tscn") var reboot_scene: String
+@export_file_path("*.tscn") var victory_scene: String
+@export_file_path("*.tscn") var death_scene: String
 @export var walk_speed := 5.0
 const JUMP_VELOCITY = 4.5
 
@@ -51,22 +52,19 @@ func _on_area_entered(area: Area3D):
 	if area.is_in_group(&"lose_trigger"):
 		print("you died")
 		player_state.death_count += 1
-		_reboot()
+		ScreenTransition.auto_transition_threaded(death_scene)
+		return
 	if area.is_in_group(&"win_trigger"):
-		print("you won but i have no win scene so do it again")
 		print("completion time %ss (%d resets %d deaths, %d oobs)" % [
 			player_state.game_time,
 			player_state.reset_count,
 			player_state.death_count,
 			player_state.oob_count,
 		])
+		ScreenTransition.auto_transition_threaded(victory_scene)
 		player_state.reset()
 		Hoarder.clear()
-		_reboot()
-
-func _reboot() -> void:
-	await get_tree().process_frame
-	get_tree().change_scene_to_file(reboot_scene)
+		return
 
 func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 	collision_mask = channel.collision_mask
@@ -100,5 +98,6 @@ func _physics_process(delta: float) -> void:
 
 func _on_laser_3d_collision_detected(_collision_result: LaserResult) -> void:
 	if _collision_result.collider == self:
-		print("you died")
-		_reboot()
+		print("you died to a laser")
+		player_state.death_count += 1
+		ScreenTransition.auto_transition_threaded(death_scene)

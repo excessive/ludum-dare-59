@@ -56,7 +56,3 @@ func _physics_process(_delta: float) -> void:
 
 	if Input.is_anything_pressed():
 		_on_animation_finish(animation.current_animation)
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
