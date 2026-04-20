@@ -7,8 +7,8 @@ var _next_scene: PackedScene
 var _next_scene_path: String
 var quit_after_transition_out := false
 
-const FADE_IN := preload("res://scenes/transitions/FadeIn.tscn")
-const FADE_OUT := preload("res://scenes/transitions/FadeOut.tscn")
+const FADE_IN := preload("res://scenes/transitions/fade_in.tscn")
+const FADE_OUT := preload("res://scenes/transitions/fade_out.tscn")
 
 enum TransitionMode {
 	In, # switches, then uncovers

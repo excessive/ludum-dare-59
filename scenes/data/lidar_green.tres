@@ -1,10 +1,12 @@
 [gd_resource type="Resource" script_class="LidarChannel" format=3 uid="uid://dvfglbdfr7fn2"]
 
 [ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://scripts/lidar_channel.gd" id="1_g2vr5"]
+[ext_resource type="Resource" uid="uid://es3ey2yyvdo0" path="res://scenes/data/wave_set_b.tres" id="2_pu7fk"]
 
 [resource]
 script = ExtResource("1_g2vr5")
 collision_mask = 5
 visibility_mask = 4
 color = Color(0.4058605, 0.8047059, 0.24858811, 1)
+sync_lock = ExtResource("2_pu7fk")
 metadata/_custom_type_script = "uid://ui4apks0wqds"

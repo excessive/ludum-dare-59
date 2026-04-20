@@ -3,17 +3,16 @@ extends Area3D
 @export var player_state: PlayerState
 var anim: Tween
 @onready var label: Label = $Label
+@export var external_trigger_mode := false
 
 func _ready() -> void:
-	_reconnect()
+	if not external_trigger_mode:
+		_reconnect()
 
 func _reconnect():
 	body_entered.connect(_on_body_entered, CONNECT_ONE_SHOT)
 
-func _on_body_entered(node: Node3D):
-	if not node.is_in_group(&"player"):
-		_reconnect()
-		return
+func _checkpoint():
 	if not player_state.checkpoint(self):
 		return # already recorded
 	print("checkpoint reached (%s)" % global_position)
@@ -30,3 +29,9 @@ func _on_body_entered(node: Node3D):
 	anim.parallel().tween_property(label, "modulate:a", 1, 0.1)
 	anim.tween_interval(2)
 	anim.tween_property(label, "modulate:a", 0, 1)
+
+func _on_body_entered(node: Node3D):
+	if not node.is_in_group(&"player"):
+		_reconnect()
+		return
+	_checkpoint()

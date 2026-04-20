@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://4n0a70myqdsn"]
 
 [ext_resource type="Script" uid="uid://cshm1kmwnc0ma" path="res://scripts/checkpoint.gd" id="1_wpuaw"]
-[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scripts/player_state.tres" id="2_hjeaj"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scenes/data/player_state.tres" id="2_hjeaj"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hjeaj"]
 blend_mode = 1

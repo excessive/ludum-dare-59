@@ -67,9 +67,12 @@ func _on_channel_changed(new_channel: LidarChannel):
 func _record(channel: LidarChannel, pos: Vector3):
 	meshes[channel].record(pos)
 
+func _channel_is_blocked(channel: LidarChannel) -> bool:
+	return channel.blocked or (channel.sync_lock and not channel.sync_lock.locked)
+
 func _cycle_channel(offset: int) -> bool:
 	var new_channel = wrapi(current_channel + offset, 0, channels.size())
-	if channels[new_channel].blocked:
+	if current_channel == new_channel or _channel_is_blocked(channels[new_channel]):
 		#print("channel blocked, skipping")
 		return false
 	current_channel = new_channel

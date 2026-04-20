@@ -2,17 +2,17 @@
 
 [ext_resource type="Script" uid="uid://cd2uj31vrlcph" path="res://scripts/player.gd" id="1_nvl01"]
 [ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://materials/camera.gdshader" id="2_ivps1"]
-[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scripts/player_state.tres" id="3_kdgjc"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scenes/data/player_state.tres" id="3_kdgjc"]
 [ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://scripts/mouse_capture.gd" id="3_urp6f"]
 [ext_resource type="Script" uid="uid://c6uoafa5duxwt" path="res://scripts/player_camera.gd" id="4_bwjto"]
 [ext_resource type="Script" uid="uid://bdddwpodg4mor" path="res://scripts/lidar.gd" id="5_606se"]
 [ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://scripts/lidar_channel.gd" id="6_u1c27"]
-[ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://scripts/lidar_red.tres" id="7_op7ga"]
-[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scripts/lidar_green.tres" id="8_q13i1"]
-[ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://scripts/lidar_blue.tres" id="9_pylmc"]
-[ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://scripts/lidar_white.tres" id="10_pbfsw"]
-[ext_resource type="Resource" uid="uid://bywtlnxkfu5gq" path="res://scripts/lidar_fog.tres" id="11_5tmop"]
-[ext_resource type="Resource" uid="uid://xcb26g60b5mm" path="res://scripts/player_tool_state.tres" id="12_dchgp"]
+[ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://scenes/data/lidar_red.tres" id="7_op7ga"]
+[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scenes/data/lidar_green.tres" id="8_q13i1"]
+[ext_resource type="Resource" uid="uid://eltofybuxpyy" path="res://scenes/data/lidar_blue.tres" id="9_pylmc"]
+[ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://scenes/data/lidar_white.tres" id="10_pbfsw"]
+[ext_resource type="Resource" uid="uid://bywtlnxkfu5gq" path="res://scenes/data/lidar_fog.tres" id="11_5tmop"]
+[ext_resource type="Resource" uid="uid://xcb26g60b5mm" path="res://scenes/data/player_tool_state.tres" id="12_dchgp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
 shader = ExtResource("2_ivps1")
@@ -118,7 +118,7 @@ func _exit_tree() -> void:
 
 func _on_lidar_channel_status_updated(channel: LidarChannel) -> void:
 	var data := _get_or_add_channel(channel)
-	if channel.blocked:
+	if channel.blocked or (channel.sync_lock and not channel.sync_lock.locked):
 		data.box.bg_color.a = 0.1
 	else:
 		data.box.bg_color.a = 1.0
@@ -133,6 +133,8 @@ func _on_lidar_channel_updated(channel: LidarChannel) -> void:
 			cd.box.border_color = Color.BLACK
 
 func _process(delta: float) -> void:
+	for ch: LidarChannel in channel_data.keys():
+		_on_lidar_channel_status_updated(ch) # i dont have time for this
 	if tool_state.is_blocked():
 		modulate.a = lerpf(modulate.a, 0, 1.0 - exp(-2.5 * delta))
 	else:

@@ -4,6 +4,7 @@ extends Resource
 @export_flags_3d_physics var collision_mask := 0
 @export_flags_3d_physics var visibility_mask := 0
 @export_color_no_alpha var color := Color.WHITE
+@export var sync_lock: WaveSet
 @export var haze := false
 var blocked := false
 
