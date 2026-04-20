@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://bb127cof2d72s"]
+
+[ext_resource type="PackedScene" uid="uid://bm73yhot8747j" path="res://models/reel.glb" id="1_7ofbu"]
+
+[sub_resource type="GDScript" id="GDScript_628lk"]
+script/source = "extends Node3D
+
+var spin := false
+const spin_speed := 5.0
+
+func _set_active(spinny: bool):
+	spin = spinny
+
+func _process(delta: float) -> void:
+	$reel2.rotate_object_local(Vector3.UP, delta * spin_speed * float(spin))
+	$reel3.rotate_object_local(Vector3.UP, delta * spin_speed * float(spin))
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7ofbu"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_628lk"]
+material = SubResource("StandardMaterial3D_7ofbu")
+size = Vector3(0.6875, 0.049072266, 0.001)
+
+[node name="Node3D" type="Node3D" unique_id=205632890]
+script = SubResource("GDScript_628lk")
+
+[node name="reel2" parent="." unique_id=760706352 instance=ExtResource("1_7ofbu")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.33, -0.07815648, -0.07815648)
+
+[node name="reel3" parent="." unique_id=353355723 instance=ExtResource("1_7ofbu")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.33, -0.07815648, -0.07815648)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1902476727]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.15631297, -0.07815647)
+layers = 15
+mesh = SubResource("BoxMesh_628lk")

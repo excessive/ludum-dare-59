@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://4n0a70myqdsn"]
+
+[ext_resource type="Script" uid="uid://cshm1kmwnc0ma" path="res://scripts/checkpoint.gd" id="1_wpuaw"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scripts/player_state.tres" id="2_hjeaj"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_hjeaj"]
+blend_mode = 1
+
+[node name="Checkpoint" type="Area3D" unique_id=1252955814 groups=["checkpoint"]]
+script = ExtResource("1_wpuaw")
+player_state = ExtResource("2_hjeaj")
+
+[node name="Label" type="Label" parent="." unique_id=1626442941]
+visible = false
+material = SubResource("CanvasItemMaterial_hjeaj")
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -221.0
+offset_top = -240.0
+offset_right = 221.0
+offset_bottom = -224.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "checkpoint reached"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true

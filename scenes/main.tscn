@@ -5,11 +5,14 @@
 [ext_resource type="PackedScene" uid="uid://bvu10fmdt27xf" path="res://entities/lose_trigger.tscn" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="4_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://dngmds5nqpk3g" path="res://test/wave_screen.tscn" id="5_tbgi4"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scripts/player_state.tres" id="5_trceg"]
 [ext_resource type="Script" uid="uid://cjuc5q27hxsvh" path="res://scripts/wave_checker.gd" id="6_tefeu"]
 [ext_resource type="Resource" uid="uid://es3ey2yyvdo0" path="res://entities/wave_set_b.tres" id="7_choun"]
 [ext_resource type="Script" uid="uid://bqovhn6u8xscc" path="res://scripts/wave_set.gd" id="7_tipki"]
 [ext_resource type="Resource" uid="uid://cj32g3ghiyik8" path="res://entities/wave_set_a.tres" id="8_85g3d"]
 [ext_resource type="Resource" uid="uid://dppu54gtwwpoh" path="res://entities/wave_set_c.tres" id="8_ya4ey"]
+[ext_resource type="PackedScene" uid="uid://bb127cof2d72s" path="res://entities/tapes.tscn" id="9_ya4ey"]
+[ext_resource type="PackedScene" uid="uid://4n0a70myqdsn" path="res://entities/checkpoint.tscn" id="10_eb6dy"]
 
 [sub_resource type="Environment" id="Environment_ig7tw"]
 background_mode = 1
@@ -133,9 +136,11 @@ script/source = "extends Area3D
 
 var respawn_transforms: Dictionary[NodePath, Transform3D] = {}
 
+@export var player_state: PlayerState
+
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	body_entered.connect(_on_body_entered, CONNECT_DEFERRED)
+	body_exited.connect(_on_body_exited, CONNECT_DEFERRED)
 
 func _on_body_entered(node: Node3D):
 	if node.is_in_group(&\"no_respawn\"):
@@ -144,11 +149,19 @@ func _on_body_entered(node: Node3D):
 	respawn_transforms.set(node.get_path(), node.global_transform)
 
 func _on_body_exited(node: Node3D):
-	if node.has_signal(&\"respawn\"):
-		node.respawn.emit()
+	if not node.is_inside_tree():
 		return
+
+	if node is CharacterBody3D and node.is_in_group(&\"player\"):
+		node.player_state.oob_count += 1
+		#print(node.player_state.oob_count)
+
 	if respawn_transforms.has(node.get_path()):
-		node.global_transform = respawn_transforms[node.get_path()]
+		var target = respawn_transforms[node.get_path()]
+		if node.has_signal(&\"respawn\"):
+			node.respawn.emit(target)
+			return 
+		node.global_transform = target
 		node.reset_physics_interpolation()
 		if node is RigidBody3D:
 			node.linear_velocity = Vector3.ZERO
@@ -160,6 +173,8 @@ func _on_body_exited(node: Node3D):
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_p5pve"]
 size = Vector3(96.31079, 67.3811, 82.1228)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trceg"]
 
 [sub_resource type="GDScript" id="GDScript_tbgi4"]
 script/source = "extends SpotLight3D
@@ -328,6 +343,7 @@ collision_mask = 15
 input_ray_pickable = false
 monitorable = false
 script = SubResource("GDScript_e0an3")
+player_state = ExtResource("5_trceg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="map/SafeArea" unique_id=1667379667]
 shape = SubResource("BoxShape3D_p5pve")
@@ -363,6 +379,18 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.5
 editable = true
 wave = ExtResource("8_ya4ey")
 
+[node name="Node3D" parent="." unique_id=205632890 instance=ExtResource("9_ya4ey")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46259522, 5.553187, 4.238191)
+
+[node name="Checkpoint" parent="." unique_id=1252955814 instance=ExtResource("10_eb6dy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, -7.1054274e-15, 0, 1, -5.9999995, 5.3334355, 7.9999995)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoint" unique_id=231346033]
+shape = SubResource("BoxShape3D_trceg")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Checkpoint" unique_id=1571538184]
+layers = 31
+
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=487716335]
 transform = Transform3D(-1, 0, -8.742277e-08, -5.9647164e-08, 0.73108715, 0.68228406, 6.391367e-08, 0.68228406, -0.73108715, 0, 9.568348, 0.1408248)
 layers = 15
@@ -377,4 +405,5 @@ script = ExtResource("6_tefeu")
 waves = Array[ExtResource("7_tipki")]([ExtResource("8_85g3d"), ExtResource("7_choun"), ExtResource("8_ya4ey")])
 metadata/_custom_type_script = "uid://cjuc5q27hxsvh"
 
+[connection signal="alignment_changed" from="SpotLight3D/WaveChecker" to="Node3D" method="_set_active"]
 [connection signal="alignment_changed" from="SpotLight3D/WaveChecker" to="SpotLight3D" method="_on_wave_screen_alignment_changed"]

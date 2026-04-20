@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cd2uj31vrlcph" path="res://scripts/player.gd" id="1_nvl01"]
 [ext_resource type="Shader" uid="uid://bv303twpcdqu2" path="res://materials/camera.gdshader" id="2_ivps1"]
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scripts/player_state.tres" id="3_kdgjc"]
 [ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://scripts/mouse_capture.gd" id="3_urp6f"]
 [ext_resource type="Script" uid="uid://c6uoafa5duxwt" path="res://scripts/player_camera.gd" id="4_bwjto"]
 [ext_resource type="Script" uid="uid://bdddwpodg4mor" path="res://scripts/lidar.gd" id="5_606se"]
@@ -147,6 +148,7 @@ radius = 0.75
 script = ExtResource("1_nvl01")
 reboot_scene = "res://reboot.tscn"
 tool_state = ExtResource("12_dchgp")
+player_state = ExtResource("3_kdgjc")
 
 [node name="camfx" type="ColorRect" parent="." unique_id=844979639]
 material = SubResource("ShaderMaterial_4c57u")
@@ -226,6 +228,7 @@ script = ExtResource("4_bwjto")
 [node name="Lidar" type="AnimatableBody3D" parent="Camera3D" unique_id=1248948536 node_paths=PackedStringArray("sensor", "player")]
 collision_layer = 0
 collision_mask = 0
+sync_to_physics = false
 script = ExtResource("5_606se")
 channels = Array[ExtResource("6_u1c27")]([ExtResource("7_op7ga"), ExtResource("8_q13i1"), ExtResource("9_pylmc")])
 alert_channels = Array[ExtResource("6_u1c27")]([ExtResource("10_pbfsw"), ExtResource("11_5tmop")])

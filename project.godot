@@ -20,6 +20,7 @@ boot_splash/show_image=false
 [autoload]
 
 ControllerIcons="*uid://ba3e8paqa24yb"
+Hoarder="*uid://bgmolqwd0hpo"
 
 [display]
 
@@ -35,6 +36,7 @@ enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg", "res://add
 lose_trigger=""
 win_trigger=""
 player=""
+checkpoint=""
 
 [gui]
 

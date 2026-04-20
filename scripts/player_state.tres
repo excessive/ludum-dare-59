@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="PlayerState" format=3 uid="uid://bgmqrmvpjk2dc"]
+
+[ext_resource type="Script" uid="uid://bbfde6ed52qic" path="res://scripts/player_state.gd" id="1_vuwel"]
+
+[resource]
+script = ExtResource("1_vuwel")
+metadata/_custom_type_script = "uid://bbfde6ed52qic"
