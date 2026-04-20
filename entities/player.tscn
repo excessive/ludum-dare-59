@@ -220,6 +220,7 @@ shape = SubResource("CapsuleShape3D_7dm0k")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1592225126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+doppler_tracking = 2
 script = ExtResource("4_bwjto")
 
 [node name="Lidar" type="AnimatableBody3D" parent="Camera3D" unique_id=1248948536 node_paths=PackedStringArray("sensor", "player")]

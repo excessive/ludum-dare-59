@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WaveSet" format=3 uid="uid://es3ey2yyvdo0"]
+
+[ext_resource type="Script" uid="uid://bqovhn6u8xscc" path="res://scripts/wave_set.gd" id="1_ef61k"]
+[ext_resource type="Script" uid="uid://cwde1dysqshf5" path="res://scripts/wave_params.gd" id="2_fdwfj"]
+
+[sub_resource type="Resource" id="Resource_hh3mt"]
+script = ExtResource("2_fdwfj")
+gain = -0.75
+frequency = 48.0
+alignment = 0.93
+drift = -0.6
+
+[sub_resource type="Resource" id="Resource_p4b04"]
+script = ExtResource("2_fdwfj")
+phase = 1.0
+frequency = 8.0
+alignment = 0.95
+drift = -0.6
+
+[resource]
+script = ExtResource("1_ef61k")
+state = SubResource("Resource_hh3mt")
+target = SubResource("Resource_p4b04")
+metadata/_custom_type_script = "uid://bqovhn6u8xscc"

@@ -5,6 +5,11 @@
 [ext_resource type="PackedScene" uid="uid://bvu10fmdt27xf" path="res://entities/lose_trigger.tscn" id="3_tefeu"]
 [ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="4_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://dngmds5nqpk3g" path="res://test/wave_screen.tscn" id="5_tbgi4"]
+[ext_resource type="Script" uid="uid://cjuc5q27hxsvh" path="res://scripts/wave_checker.gd" id="6_tefeu"]
+[ext_resource type="Resource" uid="uid://es3ey2yyvdo0" path="res://entities/wave_set_b.tres" id="7_choun"]
+[ext_resource type="Script" uid="uid://bqovhn6u8xscc" path="res://scripts/wave_set.gd" id="7_tipki"]
+[ext_resource type="Resource" uid="uid://cj32g3ghiyik8" path="res://entities/wave_set_a.tres" id="8_85g3d"]
+[ext_resource type="Resource" uid="uid://dppu54gtwwpoh" path="res://entities/wave_set_c.tres" id="8_ya4ey"]
 
 [sub_resource type="Environment" id="Environment_ig7tw"]
 background_mode = 1
@@ -344,8 +349,19 @@ collision_mask = 4
 size = Vector3(33.131836, 4.6600494, 27.12207)
 
 [node name="WaveScreen" parent="." unique_id=1135694422 instance=ExtResource("5_tbgi4")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.9617907, 6.399395, 4.022241)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2.5184274, 6.399395, 4.022241)
 editable = true
+wave = ExtResource("8_85g3d")
+
+[node name="WaveScreen2" parent="." unique_id=440600434 instance=ExtResource("5_tbgi4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.9649663, 6.399395, 4.022241)
+editable = true
+wave = ExtResource("7_choun")
+
+[node name="WaveScreen3" parent="." unique_id=1978808056 instance=ExtResource("5_tbgi4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.56239295, 6.399395, 4.022241)
+editable = true
+wave = ExtResource("8_ya4ey")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=487716335]
 transform = Transform3D(-1, 0, -8.742277e-08, -5.9647164e-08, 0.73108715, 0.68228406, 6.391367e-08, 0.68228406, -0.73108715, 0, 9.568348, 0.1408248)
@@ -356,4 +372,9 @@ light_cull_mask = 4293918751
 spot_range = 7.163
 script = SubResource("GDScript_tbgi4")
 
-[connection signal="alignment_changed" from="WaveScreen" to="SpotLight3D" method="_on_wave_screen_alignment_changed"]
+[node name="WaveChecker" type="Node" parent="SpotLight3D" unique_id=498800702]
+script = ExtResource("6_tefeu")
+waves = Array[ExtResource("7_tipki")]([ExtResource("8_85g3d"), ExtResource("7_choun"), ExtResource("8_ya4ey")])
+metadata/_custom_type_script = "uid://cjuc5q27hxsvh"
+
+[connection signal="alignment_changed" from="SpotLight3D/WaveChecker" to="SpotLight3D" method="_on_wave_screen_alignment_changed"]

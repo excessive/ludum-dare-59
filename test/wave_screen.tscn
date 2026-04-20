@@ -3,67 +3,116 @@
 [ext_resource type="Script" uid="uid://cwde1dysqshf5" path="res://scripts/wave_params.gd" id="1_12fg8"]
 [ext_resource type="PackedScene" uid="uid://cg83e85x72hsq" path="res://test/wave_graph.tscn" id="1_57kv7"]
 [ext_resource type="Resource" uid="uid://xcb26g60b5mm" path="res://scripts/player_tool_state.tres" id="2_475l4"]
+[ext_resource type="Script" uid="uid://bqovhn6u8xscc" path="res://scripts/wave_set.gd" id="2_osffi"]
 
 [sub_resource type="GDScript" id="GDScript_57kv7"]
 script/source = "extends Node3D
 
 @export var editable := false
-@export var wave: WaveParams
-@export var target_wave: WaveParams
+@export var wave: WaveSet
 @export var tool_state: ToolState
 var last_pos := Vector2.ZERO
 
 @export_color_no_alpha var wave_unaligned_color := Color.ORANGE_RED
-@export_color_no_alpha var wave_aligned_color := Color.GREEN_YELLOW
+@export_color_no_alpha var wave_ready_color := Color.YELLOW
+@export_color_no_alpha var wave_aligned_color := Color.GREEN
 
 signal alignment_changed(aligned: bool)
+signal alignment_locked()
+
 var was_aligned := false
+var was_pressed := false
+var blinky := 0.0
+
+func _update_sync_status(aligned: bool):
+	var target_color := wave_unaligned_color
+	if aligned:
+		if editable:
+			target_color = wave_ready_color
+			%status.text = \"subsystem status: ready\"
+		else:
+			target_color = wave_aligned_color
+			%status.text = \"subsystem status: synchronized\"
+	else:
+		%status.text = \"subsystem status: desynchronized\"
+	%status.self_modulate = target_color
+	%sync.self_modulate = target_color * smoothstep(0.21, 0.3, blinky * float(was_aligned) + float(not editable))
+	%smash.self_modulate = Color.WHITE #* smoothstep(0.21, 0.3, blinky * float(was_aligned) + float(not editable))
+	%wave.default_color = target_color
 
 func _check_align():
-	var alignment := absf(wave.wave_alignment(target_wave))
-	var aligned := alignment > 0.998
-	%smash.disabled = not aligned
-	%sync.self_modulate = wave_unaligned_color.blend(Color(wave_aligned_color, smoothstep(0.999, 1.0, alignment)))
-	%wave.default_color = %sync.self_modulate
+	if not editable:
+		return
+	var aligned := wave.is_aligned()
+	%smash.disabled = not aligned	
+	_update_sync_status(aligned)
 	if aligned != was_aligned:
 		alignment_changed.emit(aligned)
 	was_aligned = aligned
 
+func _on_button_pressed() -> void:
+	alignment_locked.emit()
+	wave.locked = true
+	%lockout.show()
+	%smash.disabled = true
+	_update_sync_status(true)
+	_set_editable(false)
+
+func _set_editable(_editable):
+	editable = _editable
+	%phase.editable = _editable
+	%offset.editable = _editable
+	%gain.editable = _editable
+	%frequency.editable = _editable
+	%phase.self_modulate.a = 1 # = 0.5 + float(_editable) * 0.5
+	%offset.self_modulate.a = 1 # = 0.5 + float(_editable) * 0.5
+	%gain.self_modulate.a = 1 # = 0.5 + float(_editable) * 0.5
+	%frequency.self_modulate.a = 1 # = 0.5 + float(_editable) * 0.5
+
 func _ready() -> void:
-	%wave.wave = wave
-	%target.wave = target_wave
-	%phase.editable = editable
-	%offset.editable = editable
-	%gain.editable = editable
-	%frequency.editable = editable
-	%phase.set_value_no_signal(wave.phase)
-	%offset.set_value_no_signal(wave.offset)
-	%gain.set_value_no_signal(wave.gain)
-	%frequency.set_value_no_signal(wave.frequency)
+	var timer := Timer.new()
+	timer.autostart = true
+	timer.wait_time = 0.5
+	timer.timeout.connect(_check_align)
+	add_child(timer)
+
+	assert(wave is WaveSet)
+	%wave.wave = wave.state
+	%target.wave = wave.target
+	_set_editable(editable)
+
+	%phase.set_value_no_signal(wave.state.phase)
+	%offset.set_value_no_signal(wave.state.offset)
+	%gain.set_value_no_signal(wave.state.gain)
+	%frequency.set_value_no_signal(wave.state.frequency)
 	_check_align()
 	%phase.value_changed.connect(func(new_value: float):
-		wave.phase = new_value
+		wave.state.phase = new_value
 		_check_align()
 	)
 	%offset.value_changed.connect(func(new_value: float):
-		wave.offset = new_value
+		wave.state.offset = new_value
 		_check_align()
 	)
 	%gain.value_changed.connect(func(new_value: float):
-		wave.gain = new_value
+		wave.state.gain = new_value
 		_check_align()
 	)
 	%frequency.value_changed.connect(func(new_value: float):
-		wave.frequency = new_value
+		wave.state.frequency = new_value
 		_check_align()
 	)
 
 func _process(_delta: float) -> void:
-	if not editable:
-		%phase.set_value_no_signal(wave.phase)
-		%offset.set_value_no_signal(wave.offset)
-		%gain.set_value_no_signal(wave.gain)
-		%frequency.set_value_no_signal(wave.frequency)
+	%phase.set_value_no_signal(wave.state.phase)
+	%offset.set_value_no_signal(wave.state.offset)
+	%gain.set_value_no_signal(wave.state.gain)
+	%frequency.set_value_no_signal(wave.state.frequency)
+
+	blinky = maxf(0, blinky - _delta)
+	if blinky <= 0:
+		blinky = 0.5
+	_update_sync_status(was_aligned)
 
 	var cam := get_viewport().get_camera_3d()
 	if not cam:
@@ -84,16 +133,28 @@ func _process(_delta: float) -> void:
 	var rd := cam.project_ray_normal(center)
 	var sp := Plane(screen.global_basis.z, screen.global_position)
 	var hit = sp.intersects_ray(rp, rd)
+	var try_release := false
 	if hit is Vector3:
 		var mesh := screen.mesh as PlaneMesh
 		var local_hit: Vector3 = screen.to_local(hit)
 		var uv := Vector2(local_hit.x, -local_hit.y) / mesh.size + Vector2(0.5, 0.5) # why
 		var svp: Vector2 = $SubViewport.size
-		var margin := 0.1
+		var margin := 0.25
 		var active_range := Rect2(Vector2.ONE * -margin, Vector2.ONE * (1.0 + margin))
 		if active_range.has_point(uv):
 			uv = uv.clamp(Vector2.ZERO, Vector2.ONE)
 			_screen_input(uv * svp, uv)
+		else:
+			try_release = true
+
+	# avoid sticky sliders
+	if try_release:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.position = Vector2(-1, -1)
+		event.canceled = true
+		$SubViewport.push_input(event, true)
+		was_pressed = false
 
 func _screen_input(pos: Vector2, _uv: Vector2):
 	var pressed := Input.is_action_just_pressed(\"interact\")
@@ -107,6 +168,7 @@ func _screen_input(pos: Vector2, _uv: Vector2):
 		%cursor.click()
 
 	if pressed or released:
+		was_pressed = pressed
 		var event := InputEventMouseButton.new()
 		event.button_index = MOUSE_BUTTON_LEFT
 		event.position = pos
@@ -120,24 +182,19 @@ func _screen_input(pos: Vector2, _uv: Vector2):
 	move_event.button_mask = MOUSE_BUTTON_MASK_LEFT
 	$SubViewport.push_input(move_event, true)
 	last_pos = pos
-
-
-func _on_button_pressed() -> void:
-	print(\"waoooooo\")
 "
 
-[sub_resource type="Resource" id="Resource_475l4"]
+[sub_resource type="Resource" id="Resource_osffi"]
 script = ExtResource("1_12fg8")
-offset = -0.30000000000000004
-phase = 1.35
-gain = 0.16999999999999993
-frequency = 27.0
-alignment = 0.91
-metadata/_custom_type_script = "uid://cwde1dysqshf5"
 
-[sub_resource type="Resource" id="Resource_12fg8"]
+[sub_resource type="Resource" id="Resource_w8r1l"]
 script = ExtResource("1_12fg8")
-metadata/_custom_type_script = "uid://cwde1dysqshf5"
+
+[sub_resource type="Resource" id="Resource_pusrb"]
+script = ExtResource("2_osffi")
+state = SubResource("Resource_osffi")
+target = SubResource("Resource_w8r1l")
+metadata/_custom_type_script = "uid://bqovhn6u8xscc"
 
 [sub_resource type="Gradient" id="Gradient_57kv7"]
 
@@ -157,8 +214,41 @@ border_width_bottom = 4
 border_color = Color(0.28922066, 0.10533217, 0, 1)
 expand_margin_bottom = 4.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w8r1l"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(5.4147097e-07, 0.4299953, 0.054233424, 1)
+border_width_left = 2
+border_width_top = 2
+border_color = Color(0.5163113, 0.6442805, 0.31538635, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pusrb"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(4.813075e-07, 0.2490694, 0.009389251, 1)
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5305932, 0.6574719, 0.3247108, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06k0w"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12003126, 0.5053164, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_color = Color(0.41814783, 0.52460456, 0.24246597, 1)
+anti_aliasing = false
+
 [sub_resource type="Gradient" id="Gradient_w8r1l"]
-offsets = PackedFloat32Array(0.15005966, 0.95065486, 1)
+offsets = PackedFloat32Array(0.15005966, 0.5803583, 0.6102091)
 colors = PackedColorArray(0.83354664, 0.8335465, 0.8335465, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_pusrb"]
@@ -171,6 +261,12 @@ fill_to = Vector2(1, 0.5)
 
 [sub_resource type="LabelSettings" id="LabelSettings_w8r1l"]
 font_color = Color(1, 0.58431375, 0.101960786, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_osffi"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_12fg8"]
 load_path = "res://.godot/imported/cursor.png-035665f033655af1449a463a703ba5ba.ctex"
@@ -245,10 +341,9 @@ texture_repeat = false
 
 [node name="WaveScreen" type="Node3D" unique_id=1135694422]
 script = SubResource("GDScript_57kv7")
-wave = SubResource("Resource_475l4")
-target_wave = SubResource("Resource_12fg8")
+wave = SubResource("Resource_pusrb")
 tool_state = ExtResource("2_475l4")
-wave_unaligned_color = Color(1, 0.45490196, 0.20784314, 1)
+wave_unaligned_color = Color(1, 0.24313726, 0.20784314, 1)
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=2078617407]
 disable_3d = true
@@ -262,15 +357,15 @@ metadata/_edit_lock_ = true
 
 [node name="target" parent="SubViewport" unique_id=1144789547 instance=ExtResource("1_57kv7")]
 unique_name_in_owner = true
-position = Vector2(-8, 128)
-points = PackedVector2Array(0, 28.863747, 5.5, 16.721802, 11, 7.5193825, 16.5, 1.828659, 22, 0.0034446716, 27.5, 2.1572266, 33, 8.156094, 38.5, 17.627068, 44, 29.981281, 49.5, 44.450615, 55, 60.135437, 60.5, 76.06054, 66, 91.23577, 71.5, 104.71762, 77, 115.66784, 82.5, 123.40561, 88, 127.449814, 93.5, 127.54903, 99, 123.69707, 104.5, 116.13344, 110, 105.3284, 115.5, 91.95376, 121, 76.84109, 126.5, 60.930023, 132, 45.20984, 137.5, 30.657928, 143, 18.17907, 148.5, 8.549137, 154, 2.366867, 159.5, 0.016647339, 165, 1.6446037, 170.5, 7.149517, 176, 16.189117, 181.5, 28.201366, 187, 42.4394, 192.5, 58.017967, 198, 73.96847, 203.5, 89.29918, 209, 103.056915, 214.5, 114.38628, 220, 122.582855, 225.5, 127.13705, 231, 127.76568, 236.5, 124.42967, 242, 117.33644, 247.5, 106.927, 253, 93.84857, 258.5, 78.91431, 264, 63.052742, 269.5, 47.25007, 275, 32.48883, 280.5, 19.686798, 286, 9.63995, 291.5, 2.9729462, 297, 0.100307465, 302.5, 1.2006416, 308, 6.2055397, 313.5, 14.803814, 319, 26.460869, 324.5, 40.451927, 330, 55.90709, 335.5, 71.865425, 341, 87.33473, 346.5, 101.353195, 352, 113.049225, 357.5, 121.6956, 363, 126.75475, 368.5, 127.91211, 374, 125.09573, 379.5, 118.48071, 385, 108.47834, 390.5, 95.710526, 396, 80.9711, 401.5, 65.1765, 407, 49.308746, 412.5, 34.354424, 418, 21.243324, 423.5, 10.790623, 429, 3.646225, 434.5, 0.25432968, 440, 0.8258362, 445.5, 5.325203, 451, 13.472683, 456.5, 24.761711, 462, 38.490383, 467.5, 53.80512, 473, 69.75372, 478.5, 85.34459, 484, 99.60835, 489.5, 111.658165, 495, 120.74482, 500.5, 126.30336, 506, 127.988174, 511.5, 125.69451, 517, 119.56499, 522.5, 109.9807)
+position = Vector2(-8, 88)
+points = PackedVector2Array(0, 86.30564, 5.5, 100.45328, 11, 112.33441, 16.5, 121.21036, 22, 126.529236, 27.5, 127.96035, 33, 125.41472, 38.5, 119.05062, 44, 109.26373, 49.5, 96.66258, 55, 82.03062, 60.5, 66.277596, 66, 50.382965, 71.5, 35.33498, 77, 22.069244, 82.5, 11.410561, 88, 4.021633, 93.5, 0.3618698, 99, 0.6588173, 104.5, 4.8940125, 110, 12.804134, 115.5, 23.897362, 121, 37.483982, 126.5, 52.71924, 132, 68.655876, 137.5, 84.30304, 143, 98.68785, 148.5, 110.91594, 154, 120.22703, 159.5, 126.04219, 165, 127.99987, 170.5, 125.97835, 176, 120.10331, 181.5, 110.740036, 187, 98.4707, 192.5, 84.05814, 198, 68.39847, 203.5, 52.465313, 209, 37.24933, 214.5, 23.696575, 220, 12.649693, 225.5, 4.7955246, 231, 0.6224022, 236.5, 0.38978958, 242, 4.112156, 247.5, 11.558056, 253, 22.264542, 258.5, 35.565937, 264, 50.635223, 269.5, 66.53547, 275, 82.278076, 280.5, 96.88423, 286, 109.44581, 291.5, 119.181786, 297, 125.48683, 302.5, 127.96892, 308, 126.473724, 313.5, 121.09422, 319, 112.16487, 324.5, 100.240875, 330, 86.06358, 335.5, 70.514496, 341, 54.56036, 346.5, 39.19314, 352, 25.36829, 357.5, 13.94537, 363, 5.6346054, 368.5, 0.95272064, 374, 0.19080734, 379.5, 3.396244, 385, 10.369724, 390.5, 20.677677, 396, 33.679207, 401.5, 48.56593, 407, 64.41227, 412.5, 80.23298, 418, 95.0444, 423.5, 107.92563, 429, 118.075775, 434.5, 124.863754, 440, 127.86752, 445.5, 126.90031, 451, 122.02226, 456.5, 113.536674, 462, 101.97113, 467.5, 88.04473, 473, 72.623344, 478.5, 56.665802, 484, 41.164265, 489.5, 27.082542, 495, 15.296165, 500.5, 6.53796, 506, 1.3524666, 511.5, 0.062091827, 517, 2.7470665, 522.5, 9.240452)
 default_color = Color(0.42447174, 0.4251847, 0.3947724, 1)
 wave_size = Vector2(528, 128)
 
 [node name="wave" parent="SubViewport" unique_id=1554106495 instance=ExtResource("1_57kv7")]
 unique_name_in_owner = true
-position = Vector2(-8, 128)
-points = PackedVector2Array(0, 28.863747, 5.5, 16.721802, 11, 7.5193825, 16.5, 1.828659, 22, 0.0034446716, 27.5, 2.1572266, 33, 8.156094, 38.5, 17.627068, 44, 29.981281, 49.5, 44.450615, 55, 60.135437, 60.5, 76.06054, 66, 91.23577, 71.5, 104.71762, 77, 115.66784, 82.5, 123.40561, 88, 127.449814, 93.5, 127.54903, 99, 123.69707, 104.5, 116.13344, 110, 105.3284, 115.5, 91.95376, 121, 76.84109, 126.5, 60.930023, 132, 45.20984, 137.5, 30.657928, 143, 18.17907, 148.5, 8.549137, 154, 2.366867, 159.5, 0.016647339, 165, 1.6446037, 170.5, 7.149517, 176, 16.189117, 181.5, 28.201366, 187, 42.4394, 192.5, 58.017967, 198, 73.96847, 203.5, 89.29918, 209, 103.056915, 214.5, 114.38628, 220, 122.582855, 225.5, 127.13705, 231, 127.76568, 236.5, 124.42967, 242, 117.33644, 247.5, 106.927, 253, 93.84857, 258.5, 78.91431, 264, 63.052742, 269.5, 47.25007, 275, 32.48883, 280.5, 19.686798, 286, 9.63995, 291.5, 2.9729462, 297, 0.100307465, 302.5, 1.2006416, 308, 6.2055397, 313.5, 14.803814, 319, 26.460869, 324.5, 40.451927, 330, 55.90709, 335.5, 71.865425, 341, 87.33473, 346.5, 101.353195, 352, 113.049225, 357.5, 121.6956, 363, 126.75475, 368.5, 127.91211, 374, 125.09573, 379.5, 118.48071, 385, 108.47834, 390.5, 95.710526, 396, 80.9711, 401.5, 65.1765, 407, 49.308746, 412.5, 34.354424, 418, 21.243324, 423.5, 10.790623, 429, 3.646225, 434.5, 0.25432968, 440, 0.8258362, 445.5, 5.325203, 451, 13.472683, 456.5, 24.761711, 462, 38.490383, 467.5, 53.80512, 473, 69.75372, 478.5, 85.34459, 484, 99.60835, 489.5, 111.658165, 495, 120.74482, 500.5, 126.30336, 506, 127.988174, 511.5, 125.69451, 517, 119.56499, 522.5, 109.9807)
+position = Vector2(-8, 88)
+points = PackedVector2Array(0, 86.30564, 5.5, 100.45328, 11, 112.33441, 16.5, 121.21036, 22, 126.529236, 27.5, 127.96035, 33, 125.41472, 38.5, 119.05062, 44, 109.26373, 49.5, 96.66258, 55, 82.03062, 60.5, 66.277596, 66, 50.382965, 71.5, 35.33498, 77, 22.069244, 82.5, 11.410561, 88, 4.021633, 93.5, 0.3618698, 99, 0.6588173, 104.5, 4.8940125, 110, 12.804134, 115.5, 23.897362, 121, 37.483982, 126.5, 52.71924, 132, 68.655876, 137.5, 84.30304, 143, 98.68785, 148.5, 110.91594, 154, 120.22703, 159.5, 126.04219, 165, 127.99987, 170.5, 125.97835, 176, 120.10331, 181.5, 110.740036, 187, 98.4707, 192.5, 84.05814, 198, 68.39847, 203.5, 52.465313, 209, 37.24933, 214.5, 23.696575, 220, 12.649693, 225.5, 4.7955246, 231, 0.6224022, 236.5, 0.38978958, 242, 4.112156, 247.5, 11.558056, 253, 22.264542, 258.5, 35.565937, 264, 50.635223, 269.5, 66.53547, 275, 82.278076, 280.5, 96.88423, 286, 109.44581, 291.5, 119.181786, 297, 125.48683, 302.5, 127.96892, 308, 126.473724, 313.5, 121.09422, 319, 112.16487, 324.5, 100.240875, 330, 86.06358, 335.5, 70.514496, 341, 54.56036, 346.5, 39.19314, 352, 25.36829, 357.5, 13.94537, 363, 5.6346054, 368.5, 0.95272064, 374, 0.19080734, 379.5, 3.396244, 385, 10.369724, 390.5, 20.677677, 396, 33.679207, 401.5, 48.56593, 407, 64.41227, 412.5, 80.23298, 418, 95.0444, 423.5, 107.92563, 429, 118.075775, 434.5, 124.863754, 440, 127.86752, 445.5, 126.90031, 451, 122.02226, 456.5, 113.536674, 462, 101.97113, 467.5, 88.04473, 473, 72.623344, 478.5, 56.665802, 484, 41.164265, 489.5, 27.082542, 495, 15.296165, 500.5, 6.53796, 506, 1.3524666, 511.5, 0.062091827, 517, 2.7470665, 522.5, 9.240452)
 default_color = Color(0.9999998, 0.45323372, 0.20612127, 1)
 wave_size = Vector2(528, 128)
 
@@ -298,16 +393,21 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_osffi")
 layout_mode = 2
 alignment = 1
 
-[node name="ProgressBar" type="ProgressBar" parent="SubViewport/Control/VBoxContainer/PanelContainer/HBoxContainer2" unique_id=326188311]
+[node name="status" type="Label" parent="SubViewport/Control/VBoxContainer/PanelContainer/HBoxContainer2" unique_id=986096504]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
-show_percentage = false
+text = "----"
+uppercase = true
 
 [node name="smash" type="Button" parent="SubViewport/Control/VBoxContainer/PanelContainer/HBoxContainer2" unique_id=1694353247]
 unique_name_in_owner = true
 layout_mode = 2
-text = "smash"
+theme_override_constants/align_to_largest_stylebox = 1
+theme_override_styles/normal = SubResource("StyleBoxFlat_w8r1l")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pusrb")
+theme_override_styles/hover = SubResource("StyleBoxFlat_06k0w")
+text = "SYNC"
 
 [node name="sync" type="TextureRect" parent="SubViewport/Control/VBoxContainer/PanelContainer/HBoxContainer2" unique_id=1292361534]
 unique_name_in_owner = true
@@ -315,9 +415,10 @@ layout_mode = 2
 size_flags_vertical = 4
 texture = SubResource("GradientTexture2D_pusrb")
 
-[node name="Control" type="Control" parent="SubViewport/Control/VBoxContainer" unique_id=2022829571]
+[node name="PanelContainer2" type="PanelContainer" parent="SubViewport/Control/VBoxContainer" unique_id=1523223281]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_osffi")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="SubViewport/Control/VBoxContainer" unique_id=6222617]
 custom_minimum_size = Vector2(0, 128)
@@ -337,10 +438,10 @@ ticks_position = 2
 
 [node name="Label" type="Label" parent="SubViewport/Control/VBoxContainer/HBoxContainer/phase" unique_id=1115112644]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 22.0
-offset_right = 87.00001
-offset_bottom = 45.0
+offset_left = 44.0
+offset_top = 6.0
+offset_right = 89.00001
+offset_bottom = 29.0
 rotation = 1.5707964
 text = "PHAS"
 label_settings = SubResource("LabelSettings_w8r1l")
@@ -359,10 +460,10 @@ ticks_position = 2
 
 [node name="Label" type="Label" parent="SubViewport/Control/VBoxContainer/HBoxContainer/offset" unique_id=1153756821]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 22.0
-offset_right = 87.00001
-offset_bottom = 45.0
+offset_left = 44.0
+offset_top = 6.0
+offset_right = 89.00001
+offset_bottom = 29.0
 rotation = 1.5707964
 text = "OFFS"
 label_settings = SubResource("LabelSettings_w8r1l")
@@ -381,10 +482,10 @@ ticks_position = 2
 
 [node name="Label" type="Label" parent="SubViewport/Control/VBoxContainer/HBoxContainer/gain" unique_id=56224592]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 22.0
-offset_right = 87.00001
-offset_bottom = 45.0
+offset_left = 44.0
+offset_top = 6.0
+offset_right = 89.00001
+offset_bottom = 29.0
 rotation = 1.5707964
 text = "GAIN"
 label_settings = SubResource("LabelSettings_w8r1l")
@@ -404,14 +505,48 @@ ticks_position = 2
 
 [node name="Label" type="Label" parent="SubViewport/Control/VBoxContainer/HBoxContainer/frequency" unique_id=1601782847]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 22.0
-offset_right = 87.00001
-offset_bottom = 45.0
+offset_left = 44.0
+offset_top = 6.0
+offset_right = 89.00001
+offset_bottom = 29.0
 rotation = 1.5707964
 text = "FREQ"
 label_settings = SubResource("LabelSettings_w8r1l")
 vertical_alignment = 2
+
+[node name="lockout" type="ColorRect" parent="SubViewport/Control" unique_id=1255765498]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5882353)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewport/Control/lockout" unique_id=1388334387]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -67.5
+offset_top = -20.0
+offset_right = 67.5
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_osffi")
+
+[node name="Label" type="Label" parent="SubViewport/Control/lockout/PanelContainer" unique_id=137061600]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16470589, 1, 0, 1)
+text = "subsystem synchronized"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
 
 [node name="cursor" type="Sprite2D" parent="SubViewport" unique_id=1309428736]
 unique_name_in_owner = true
