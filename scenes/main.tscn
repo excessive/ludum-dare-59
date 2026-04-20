@@ -38,6 +38,17 @@ adjustment_contrast = 1.25
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0xm2m"]
 
+[sub_resource type="GDScript" id="GDScript_trceg"]
+script/source = "extends Area3D
+
+func _ready() -> void:
+	_on_wave_checker_alignment_changed(false)
+
+func _on_wave_checker_alignment_changed(aligned: bool) -> void:
+	monitorable = aligned
+	visible = aligned
+"
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_jyhfs"]
 radius = 2.0
 
@@ -265,9 +276,15 @@ size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="WinTrigger" parent="map" unique_id=466461081 instance=ExtResource("2_tbgi4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.144458, 10.989936, 7.7454395)
+script = SubResource("GDScript_trceg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="map/WinTrigger" unique_id=185996851]
 shape = SubResource("SphereShape3D_jyhfs")
+
+[node name="WaveChecker" type="Node" parent="map/WinTrigger" unique_id=1026146583]
+script = ExtResource("6_tefeu")
+waves = Array[ExtResource("7_tipki")]([ExtResource("8_85g3d"), ExtResource("7_choun"), ExtResource("8_ya4ey")])
+metadata/_custom_type_script = "uid://cjuc5q27hxsvh"
 
 [node name="LoseTrigger" parent="map" unique_id=1248599061 instance=ExtResource("3_tefeu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1415696, 3.6754704, 11.915249)
@@ -405,5 +422,6 @@ script = ExtResource("6_tefeu")
 waves = Array[ExtResource("7_tipki")]([ExtResource("8_85g3d"), ExtResource("7_choun"), ExtResource("8_ya4ey")])
 metadata/_custom_type_script = "uid://cjuc5q27hxsvh"
 
+[connection signal="alignment_changed" from="map/WinTrigger/WaveChecker" to="map/WinTrigger" method="_on_wave_checker_alignment_changed" flags=3]
 [connection signal="alignment_changed" from="SpotLight3D/WaveChecker" to="Node3D" method="_set_active"]
 [connection signal="alignment_changed" from="SpotLight3D/WaveChecker" to="SpotLight3D" method="_on_wave_screen_alignment_changed"]

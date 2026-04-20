@@ -60,6 +60,7 @@ func _on_area_entered(area: Area3D):
 			player_state.oob_count,
 		])
 		player_state.reset()
+		Hoarder.clear()
 		_reboot()
 
 func _reboot() -> void:

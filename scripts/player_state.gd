@@ -25,6 +25,9 @@ func checkpoint(node: Node3D) -> bool:
 	return false
 
 func wavesync(wave: WaveSet) -> bool:
+	print(wave.resource_scene_unique_id)
+	if not wave.resource_scene_unique_id:
+		wave.resource_scene_unique_id = Resource.generate_scene_unique_id()
 	if not waves_synced.has(wave.resource_scene_unique_id):
 		Hoarder.keep_loaded(wave)
 		waves_synced[wave.resource_scene_unique_id] = true
