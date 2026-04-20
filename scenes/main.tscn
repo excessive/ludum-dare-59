@@ -13,6 +13,8 @@
 [ext_resource type="Resource" uid="uid://dppu54gtwwpoh" path="res://entities/wave_set_c.tres" id="8_ya4ey"]
 [ext_resource type="PackedScene" uid="uid://bb127cof2d72s" path="res://entities/tapes.tscn" id="9_ya4ey"]
 [ext_resource type="PackedScene" uid="uid://4n0a70myqdsn" path="res://entities/checkpoint.tscn" id="10_eb6dy"]
+[ext_resource type="PackedScene" uid="uid://da8w81ckch4dr" path="res://entities/sync_laser.tscn" id="11_jkv2x"]
+[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scripts/lidar_green.tres" id="12_jbj1t"]
 
 [sub_resource type="Environment" id="Environment_ig7tw"]
 background_mode = 1
@@ -225,12 +227,14 @@ layers = 1025
 use_collision = true
 collision_layer = 15
 size = Vector3(37.893555, 10.784058, 30.077148)
+metadata/_edit_lock_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="map/CSGBox3D" unique_id=1613066063]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.996338, 1.7432251)
 layers = 0
 operation = 2
 size = Vector3(34.664063, 6.1098633, 29.004028)
+metadata/_edit_lock_ = true
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="map/CSGBox3D" unique_id=44242171]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 7.2812643, -5.174194, 6.755221)
@@ -275,7 +279,7 @@ collision_mask = 257
 size = Vector3(4.3203125, 4.8129883, 2.834961)
 
 [node name="WinTrigger" parent="map" unique_id=466461081 instance=ExtResource("2_tbgi4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.144458, 10.989936, 7.7454395)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.66999, 10.989936, 9.377124)
 script = SubResource("GDScript_trceg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="map/WinTrigger" unique_id=185996851]
@@ -371,6 +375,7 @@ use_collision = true
 collision_layer = 4
 collision_mask = 4
 size = Vector3(22.49707, 15.361328, 10.6953125)
+metadata/_edit_lock_ = true
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="map/CSGBox3D5" unique_id=498829390]
 transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -2.2254062, 8.305326, 0)
@@ -380,6 +385,22 @@ use_collision = true
 collision_layer = 4
 collision_mask = 4
 size = Vector3(33.131836, 4.6600494, 27.12207)
+metadata/_edit_lock_ = true
+
+[node name="Laser" parent="." unique_id=198584673 instance=ExtResource("11_jkv2x")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 10.993244, 9.991885, 4.556491)
+lock_wave = ExtResource("8_85g3d")
+channel = ExtResource("12_jbj1t")
+
+[node name="Laser2" parent="." unique_id=1932813209 instance=ExtResource("11_jkv2x")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 10.993244, 10.65936, 4.556491)
+lock_wave = ExtResource("7_choun")
+channel = ExtResource("12_jbj1t")
+
+[node name="Laser3" parent="." unique_id=1843789211 instance=ExtResource("11_jkv2x")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 10.993244, 11.365674, 4.556491)
+lock_wave = ExtResource("8_ya4ey")
+channel = ExtResource("12_jbj1t")
 
 [node name="WaveScreen" parent="." unique_id=1135694422 instance=ExtResource("5_tbgi4")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2.5184274, 6.399395, 4.022241)
@@ -406,6 +427,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -7.1054274e-15, 0, 1, -5.9999995, 5.33
 shape = SubResource("BoxShape3D_trceg")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Checkpoint" unique_id=1571538184]
+visible = false
 layers = 31
 
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=487716335]

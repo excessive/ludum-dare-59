@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="ludum dare 59"
-config/description="maybe we'll get a nice theme for ld69"
+config/name="So Scanulous"
+config/description="neat"
 run/main_scene="uid://c0wxk1faqipeb"
 config/features=PackedStringArray("4.7")
 boot_splash/bg_color=Color(0.0627451, 0.0627451, 0.0627451, 1)
