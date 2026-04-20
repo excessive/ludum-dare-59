@@ -39,6 +39,8 @@ func update(delta: float):
 	game_time += delta
 
 func reset():
+	print("game reset")
+	Hoarder.clear()
 	waves_synced.clear()
 	checkpoints_visited.clear()
 	latest_checkpoint_path = ""
