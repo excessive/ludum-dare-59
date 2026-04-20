@@ -195,6 +195,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="charge" type="ProgressBar" parent="hud/Control" unique_id=1988903831]
+visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -218,6 +219,7 @@ offset_top = -77.0
 offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 alignment = 1
 script = SubResource("GDScript_4c57u")
 tool_state = ExtResource("12_dchgp")
@@ -227,6 +229,7 @@ visible = false
 layout_mode = 0
 offset_right = 4.0
 offset_bottom = 27.0
+mouse_filter = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1283541795]
 shape = SubResource("CapsuleShape3D_7dm0k")

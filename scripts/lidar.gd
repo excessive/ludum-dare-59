@@ -142,7 +142,7 @@ func _check_channel_blocks():
 		var offset := global_basis.z
 		var ray_count := 16
 		var ray_step := TAU/ray_count
-		var ray_range := 2.5
+		var ray_range := 1.5
 		for i in ray_count:
 			var from := global_position
 			offset = offset.rotated(global_basis.y, ray_step)
@@ -194,7 +194,9 @@ func _physics_process(delta: float) -> void:
 		if lidar_charge > 0:
 			_scan_current(true)
 			if not tool_state.is_blocked():
-				lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
+				# this just isn't adding much to the game, so let's not
+				#lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
+				pass
 			charge_updated.emit(lidar_charge)
 		pass
 	else:

@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://dyoc85eeui3q0"]
+
+[ext_resource type="PackedScene" uid="uid://bj75hrru7jk7o" path="res://models/map.glb" id="1_eduk5"]
+[ext_resource type="PackedScene" uid="uid://dngmds5nqpk3g" path="res://scenes/entities/wave_screen.tscn" id="2_8paod"]
+[ext_resource type="PackedScene" uid="uid://bvu10fmdt27xf" path="res://scenes/entities/lose_trigger.tscn" id="2_oaohw"]
+[ext_resource type="PackedScene" uid="uid://4n0a70myqdsn" path="res://scenes/entities/checkpoint.tscn" id="3_df7y4"]
+[ext_resource type="Resource" uid="uid://es3ey2yyvdo0" path="res://scenes/data/wave_set_b.tres" id="3_ldmos"]
+[ext_resource type="Resource" uid="uid://cj32g3ghiyik8" path="res://scenes/data/wave_set_a.tres" id="5_hd4ns"]
+[ext_resource type="PackedScene" uid="uid://da8w81ckch4dr" path="res://scenes/entities/sync_laser.tscn" id="6_fgy21"]
+[ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://scenes/data/lidar_red.tres" id="7_7d831"]
+[ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scenes/data/lidar_green.tres" id="8_oaohw"]
+[ext_resource type="Resource" uid="uid://dppu54gtwwpoh" path="res://scenes/data/wave_set_c.tres" id="10_fso0a"]
+[ext_resource type="PackedScene" uid="uid://dhanfsb1a4ymh" path="res://scenes/entities/win_trigger.tscn" id="11_xijnj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fso0a"]
+size = Vector3(8.05957, 1, 13.655273)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ldmos"]
+size = Vector3(1.5717773, 1.8980103, 7.166992)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hd4ns"]
+size = Vector3(5.0527344, 2.3701172, 5.616211)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vnlib"]
+radius = 3.3841648
+
+[node name="map" unique_id=813905793 instance=ExtResource("1_eduk5")]
+
+[node name="LoseTrigger" parent="." index="0" unique_id=1248599061 instance=ExtResource("2_oaohw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.261763, 5.3787456, -2.7057195)
+collision_layer = 15
+collision_mask = 15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LoseTrigger" index="1" unique_id=1154804893]
+shape = SubResource("BoxShape3D_fso0a")
+
+[node name="LoseTrigger2" parent="." index="1" unique_id=397582407 instance=ExtResource("2_oaohw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.2870448, -7.7199087, -7.1643505)
+collision_layer = 15
+collision_mask = 15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LoseTrigger2" index="1" unique_id=1412083564]
+shape = SubResource("BoxShape3D_fso0a")
+
+[node name="WaveScreen" parent="GREEN TERM" parent_id_path=PackedInt32Array(1218639608) index="0" unique_id=1135694422 instance=ExtResource("2_8paod")]
+editable = true
+wave = ExtResource("3_ldmos")
+
+[node name="Checkpoint" parent="checkpoint" parent_id_path=PackedInt32Array(116506800) index="0" unique_id=1252955814 instance=ExtResource("3_df7y4")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="checkpoint/Checkpoint" index="0" unique_id=60174624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28588867, -0.0055236816, 0)
+shape = SubResource("BoxShape3D_ldmos")
+
+[node name="Checkpoint" parent="checkpoint_001" parent_id_path=PackedInt32Array(1021834811) index="0" unique_id=1166007423 instance=ExtResource("3_df7y4")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="checkpoint_001/Checkpoint" index="0" unique_id=1708356007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6850586, 0)
+shape = SubResource("BoxShape3D_hd4ns")
+
+[node name="WaveScreen" parent="RED TERM" parent_id_path=PackedInt32Array(1765629598) index="0" unique_id=1880402312 instance=ExtResource("2_8paod")]
+editable = true
+wave = ExtResource("5_hd4ns")
+
+[node name="Laser" parent="laser" parent_id_path=PackedInt32Array(2088863799) index="0" unique_id=198584673 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+length = 5.0
+
+[node name="Laser" parent="laser_001" parent_id_path=PackedInt32Array(714024158) index="0" unique_id=1228669970 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+length = 5.0
+
+[node name="Laser" parent="laser_002" parent_id_path=PackedInt32Array(1650966050) index="0" unique_id=660352933 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+length = 11.0
+
+[node name="Laser" parent="laser_003" parent_id_path=PackedInt32Array(1412361967) index="0" unique_id=792516530 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+length = 11.0
+
+[node name="Laser" parent="laser_004" parent_id_path=PackedInt32Array(1408688211) index="0" unique_id=244157466 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+channel = ExtResource("7_7d831")
+length = 2.5
+
+[node name="Laser" parent="laser_005" parent_id_path=PackedInt32Array(409769551) index="0" unique_id=355861353 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("3_ldmos")
+channel = ExtResource("8_oaohw")
+length = 2.5
+
+[node name="Laser" parent="laser_006" parent_id_path=PackedInt32Array(1995573863) index="0" unique_id=1889201001 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+channel = ExtResource("7_7d831")
+length = 5.3
+
+[node name="Laser" parent="laser_007" parent_id_path=PackedInt32Array(891100650) index="0" unique_id=845329965 instance=ExtResource("6_fgy21")]
+lock_wave = ExtResource("5_hd4ns")
+channel = ExtResource("7_7d831")
+length = 5.3
+
+[node name="WaveScreen" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="0" unique_id=495807921 instance=ExtResource("2_8paod")]
+editable = true
+wave = ExtResource("10_fso0a")
+
+[node name="WaveScreen2" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="1" unique_id=1057771655 instance=ExtResource("2_8paod")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.4267225, 0)
+wave = ExtResource("5_hd4ns")
+
+[node name="WaveScreen3" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="2" unique_id=498571217 instance=ExtResource("2_8paod")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.4267225, 0)
+wave = ExtResource("3_ldmos")
+
+[node name="WinTrigger" parent="." index="21" unique_id=466461081 instance=ExtResource("11_xijnj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.741277, 22.397146, -6.8340564)
+collision_layer = 14
+collision_mask = 14
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WinTrigger" index="1" unique_id=443068811]
+shape = SubResource("SphereShape3D_vnlib")
