@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://26tsmsj3p0xg" path="res://scenes/pause_menu.gd" id="1_myx47"]
 [ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="2_kukqi"]
-[ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="3_kukqi"]
 
 [node name="PauseMenu" type="Control" unique_id=1702353532]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,9 +51,5 @@ text = "RETURN_MENU"
 script = ExtResource("2_kukqi")
 target_screen = "uid://cgvu1wrixw5nt"
 metadata/_custom_type_script = "uid://qqts5666b3ad"
-
-[node name="AutoReleaseMouse" type="Node" parent="." unique_id=372008485]
-script = ExtResource("3_kukqi")
-metadata/_custom_type_script = "uid://cvm75b82n21ak"
 
 [connection signal="pressed" from="VBoxContainer/continue" to="." method="_on_continue_pressed"]

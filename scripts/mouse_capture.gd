@@ -3,6 +3,7 @@ extends Control
 @export var force_mode := Input.MOUSE_MODE_MAX
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if force_mode != Input.MOUSE_MODE_MAX:
 		get_window().mouse_exited.connect(func(): Input.mouse_mode = Input.MOUSE_MODE_VISIBLE)
 		get_window().mouse_entered.connect(func(): if get_window().has_focus(): capture())
@@ -24,7 +25,7 @@ func _input(event: InputEvent) -> void:
 	if event is not InputEventKey:
 		return
 
-	if event.keycode == KEY_ESCAPE: # or event.is_action_pressed(&"system_menu"):
+	if event.is_pressed() and event.keycode == KEY_ESCAPE: # or event.is_action_pressed(&"system_menu"):
 		release()
 		return
 

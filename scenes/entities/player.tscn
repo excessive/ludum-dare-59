@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://drgrcxb3gydak" path="res://scripts/mouse_capture.gd" id="3_urp6f"]
 [ext_resource type="Script" uid="uid://c6uoafa5duxwt" path="res://scripts/player_camera.gd" id="4_bwjto"]
 [ext_resource type="Script" uid="uid://bdddwpodg4mor" path="res://scripts/lidar.gd" id="5_606se"]
+[ext_resource type="PackedScene" uid="uid://d24jnlk3p7x4r" path="res://scenes/pause_menu.tscn" id="6_saib0"]
 [ext_resource type="Script" uid="uid://ui4apks0wqds" path="res://scripts/lidar_channel.gd" id="6_u1c27"]
 [ext_resource type="Resource" uid="uid://cyti56t87kill" path="res://scenes/data/lidar_red.tres" id="7_op7ga"]
 [ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scenes/data/lidar_green.tres" id="8_q13i1"]
@@ -177,6 +178,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_urp6f")
 metadata/_edit_lock_ = true
+
+[node name="PauseMenu" parent="." unique_id=1702353532 instance=ExtResource("6_saib0")]
+visible = false
 
 [node name="hud" type="AspectRatioContainer" parent="." unique_id=159637076]
 anchors_preset = 15
