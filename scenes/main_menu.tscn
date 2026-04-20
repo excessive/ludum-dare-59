@@ -53,6 +53,7 @@ script = ExtResource("1_l6cm7")
 metadata/_custom_type_script = "uid://qqts5666b3ad"
 
 [node name="credits" type="Button" parent="VBoxContainer" unique_id=889295322]
+visible = false
 layout_mode = 2
 disabled = true
 text = "CREDITS"
