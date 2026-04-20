@@ -96,8 +96,11 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+var bread := false
+
 func _on_laser_3d_collision_detected(_collision_result: LaserResult) -> void:
-	if _collision_result.collider == self:
+	if _collision_result.collider == self and not bread:
+		bread = true
 		print("you died to a laser")
 		player_state.death_count += 1
 		ScreenTransition.auto_transition_threaded(death_scene)

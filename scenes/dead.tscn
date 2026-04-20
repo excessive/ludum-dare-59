@@ -3,6 +3,13 @@
 [ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="1_pheag"]
 [ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="2_4orh1"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4orh1"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0.63529414)
+
 [node name="Dead" type="Control" unique_id=141256512]
 layout_mode = 3
 anchors_preset = 15
@@ -24,6 +31,24 @@ offset_right = 111.5
 offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MarginContainer" type="PanelContainer" parent="VBoxContainer" unique_id=507635724]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4orh1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer" unique_id=60629711]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer" unique_id=1953816021]
+layout_mode = 2
+text = "YOU_DIED"
+
+[node name="Message" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer" unique_id=1357207116]
+custom_maximum_size = Vector2(320, -1)
+layout_mode = 2
+text = "YOU_DIED_FLAVOR"
+autowrap_mode = 2
 
 [node name="load" type="Button" parent="VBoxContainer" unique_id=1657680867]
 layout_mode = 2

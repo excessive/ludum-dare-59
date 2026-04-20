@@ -168,6 +168,9 @@ func _on_body_exited(node: Node3D):
 	if node is CharacterBody3D and node.is_in_group(&\"player\"):
 		node.player_state.oob_count += 1
 		#print(node.player_state.oob_count)
+		var msg = ScreenMessage.new()
+		msg.text = \"MY_BAD\"
+		add_child(msg)
 
 	if respawn_transforms.has(node.get_path()):
 		var target = respawn_transforms[node.get_path()]
@@ -213,7 +216,6 @@ func _process(delta: float) -> void:
 
 [node name="player" parent="." unique_id=460205903 instance=ExtResource("1_jyhfs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.708436, 0)
-reboot_scene = "res://scenes/reboot.tscn"
 
 [node name="map" type="Node3D" parent="." unique_id=1607069737]
 

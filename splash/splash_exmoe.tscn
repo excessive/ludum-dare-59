@@ -172,7 +172,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dip8n")
 next_scene_path = "uid://cgvu1wrixw5nt"
-dev_splash_skip = false
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1148975549]
 layout_mode = 1

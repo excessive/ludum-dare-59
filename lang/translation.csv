@@ -8,3 +8,11 @@ QUIT_GAME,Quit
 LOAD_CHECKPOINT,Restart from Checkpoint
 RETURN_MENU,Return to Menu
 PLAY_AGAIN,Play Again
+CHECKPOINT_REACHED,Checkpoint Reached
+MY_BAD,Sorry about that
+YOU_DIED,you died
+YOU_DIED_FLAVOR,"it's not the recommended approach, but who am i to judge"
+WAVE_DESYNCED,subsystem status: desynchronized
+WAVE_SYNCED,subsystem status: ready
+WAVE_LOCKED,subsystem status: synchronized
+WAVE_LOCKED_MSG,subsystem aligned
