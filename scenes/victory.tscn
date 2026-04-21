@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://bfasqjljym15p"]
 
+[ext_resource type="Resource" uid="uid://bgmqrmvpjk2dc" path="res://scenes/data/player_state.tres" id="1_hl81x"]
 [ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="1_le47n"]
 [ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="2_faxov"]
 
@@ -9,6 +10,35 @@ content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 bg_color = Color(0, 0, 0, 0.63529414)
+
+[sub_resource type="GDScript" id="GDScript_faxov"]
+script/source = "extends VBoxContainer
+
+@export var player_state: PlayerState
+
+func _ready() -> void:
+	var stats = player_state.sync_stats()
+	var rst := Label.new()
+	rst.auto_translate = false
+	rst.text = \"%s: %d\" % [tr(\"RESET_COUNT\"), stats[\"reset_count\"]]
+
+	var dc := Label.new()
+	dc.auto_translate = false
+	dc.text = \"%s: %d\" % [tr(\"DEATH_COUNT\"), stats[\"death_count\"]]
+
+	var oob := Label.new()
+	oob.auto_translate = false
+	oob.text = \"%s: %d\" % [tr(\"OOB_COUNT\"), stats[\"oob_count\"]]
+
+	var gt := Label.new()
+	gt.auto_translate = false
+	gt.text = \"%s: %3.1fs\" % [tr(\"GAME_TIME\"), stats[\"game_time\"]]
+
+	add_child(rst)
+	add_child(dc)
+	add_child(oob)
+	add_child(gt)
+"
 
 [node name="Victory" type="Control" unique_id=1208502613]
 layout_mode = 3
@@ -49,6 +79,16 @@ custom_maximum_size = Vector2(320, -1)
 layout_mode = 2
 text = "YOU_WON_FLAVOR"
 autowrap_mode = 2
+
+[node name="MarginContainer2" type="PanelContainer" parent="VBoxContainer" unique_id=812327953]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_faxov")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer2" unique_id=1975524625]
+layout_mode = 2
+theme_override_constants/separation = 16
+script = SubResource("GDScript_faxov")
+player_state = ExtResource("1_hl81x")
 
 [node name="replay" type="Button" parent="VBoxContainer" unique_id=1405997802]
 layout_mode = 2

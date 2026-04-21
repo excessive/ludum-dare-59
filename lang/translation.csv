@@ -16,3 +16,9 @@ WAVE_DESYNCED,subsystem status: desynchronized
 WAVE_SYNCED,subsystem status: ready
 WAVE_LOCKED,subsystem status: synchronized
 WAVE_LOCKED_MSG,subsystem aligned
+YOU_WON,you have won
+YOU_WON_FLAVOR,i ran out of time to make the last puzzle section and more (better) sounds
+RESET_COUNT,Resets
+DEATH_COUNT,Deaths
+OOB_COUNT,OOBs
+GAME_TIME,Completion Time

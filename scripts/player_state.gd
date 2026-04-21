@@ -14,6 +14,7 @@ var death_count: int = 0
 var oob_count: int = 0
 
 var game_time: float = 0
+var victory_stats: Dictionary = {}
 
 func checkpoint(node: Node3D) -> bool:
 	latest_checkpoint_path = node.get_path()
@@ -38,6 +39,16 @@ func wavesync(wave: WaveSet) -> bool:
 func update(delta: float):
 	game_time += delta
 
+func sync_stats() -> Dictionary:
+	if victory_stats.is_empty():
+		victory_stats = {
+			"reset_count": reset_count,
+			"death_count": death_count,
+			"oob_count": oob_count,
+			"game_time": game_time,
+		}
+	return victory_stats
+
 func reset():
 	print("game reset")
 	Hoarder.clear()
@@ -45,6 +56,12 @@ func reset():
 	checkpoints_visited.clear()
 	latest_checkpoint_path = ""
 	latest_checkpoint_position = Vector3.ZERO
+	victory_stats = {
+		"reset_count": reset_count,
+		"death_count": death_count,
+		"oob_count": oob_count,
+		"game_time": game_time,
+	}
 	reset_count = 0
 	death_count = 0
 	oob_count = 0
