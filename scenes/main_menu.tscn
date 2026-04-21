@@ -29,6 +29,10 @@ offset_bottom = 88.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1537042009]
+layout_mode = 2
+text = "TITLE_TITLE"
+
 [node name="new" type="Button" parent="VBoxContainer" unique_id=605297390]
 layout_mode = 2
 text = "NEW_GAME"
