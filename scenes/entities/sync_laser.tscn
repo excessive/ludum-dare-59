@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://da8w81ckch4dr"]
 
+[ext_resource type="AudioStream" uid="uid://bhu5l485bq3hh" path="res://sfx/buzz.wav" id="1_lefj2"]
 [ext_resource type="Script" uid="uid://b7feuq00dikpo" path="res://addons/laser_3d/laser_3d.gd" id="1_xqeyi"]
 
 [sub_resource type="GDScript" id="GDScript_uwd62"]
@@ -18,8 +19,11 @@ func _update():
 		unlock = not unlock
 	if unlock:
 		laser.laser_active = false
+		$Buzz.stop()
 		laser.laser_type_visible = Laser3D.LASER_VISIBLE_OFF as Laser3D.laser_visible
 	else:
+		if not $Buzz.playing:
+			$Buzz.play()
 		laser.laser_active = true
 		laser.laser_type_visible = Laser3D.LASER_ALWAYS_VISIBLE as Laser3D.laser_visible
 	laser.laser_length = length
@@ -40,6 +44,15 @@ func _ready() -> void:
 
 [node name="Laser" type="Node3D" unique_id=198584673]
 script = SubResource("GDScript_uwd62")
+
+[node name="Buzz" type="AudioStreamPlayer3D" parent="." unique_id=342277352]
+stream = ExtResource("1_lefj2")
+attenuation_model = 1
+volume_db = -16.0
+max_db = -8.0
+pitch_scale = 2.0
+max_distance = 6.0
+bus = &"SFX"
 
 [node name="laser" type="Node3D" parent="." unique_id=1767954010 groups=["lose_trigger"]]
 unique_name_in_owner = true

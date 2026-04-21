@@ -11,6 +11,7 @@
 [ext_resource type="Resource" uid="uid://dvfglbdfr7fn2" path="res://scenes/data/lidar_green.tres" id="8_oaohw"]
 [ext_resource type="Resource" uid="uid://dppu54gtwwpoh" path="res://scenes/data/wave_set_c.tres" id="10_fso0a"]
 [ext_resource type="PackedScene" uid="uid://dhanfsb1a4ymh" path="res://scenes/entities/win_trigger.tscn" id="11_xijnj"]
+[ext_resource type="AudioStream" uid="uid://bhy4bfp2u2b5f" path="res://sfx/ambient_noise_1.wav" id="12_vnlib"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fso0a"]
 size = Vector3(8.05957, 1, 13.655273)
@@ -24,7 +25,7 @@ size = Vector3(5.0527344, 2.3701172, 5.616211)
 [sub_resource type="SphereShape3D" id="SphereShape3D_vnlib"]
 radius = 3.3841648
 
-[node name="map" unique_id=813905793 instance=ExtResource("1_eduk5")]
+[node name="map" unique_id=1968975709 instance=ExtResource("1_eduk5")]
 
 [node name="LoseTrigger" parent="." index="0" unique_id=1248599061 instance=ExtResource("2_oaohw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.261763, 5.3787456, -2.7057195)
@@ -42,78 +43,105 @@ collision_mask = 15
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LoseTrigger2" index="1" unique_id=1412083564]
 shape = SubResource("BoxShape3D_fso0a")
 
-[node name="WaveScreen" parent="GREEN TERM" parent_id_path=PackedInt32Array(1218639608) index="0" unique_id=1135694422 instance=ExtResource("2_8paod")]
+[node name="WaveScreen" parent="GREEN TERM" parent_id_path=PackedInt32Array(1968699523) index="0" unique_id=1135694422 instance=ExtResource("2_8paod")]
 editable = true
 wave = ExtResource("3_ldmos")
 
-[node name="Checkpoint" parent="checkpoint" parent_id_path=PackedInt32Array(116506800) index="0" unique_id=1252955814 instance=ExtResource("3_df7y4")]
+[node name="Checkpoint" parent="checkpoint" parent_id_path=PackedInt32Array(11895191) index="0" unique_id=1252955814 instance=ExtResource("3_df7y4")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="checkpoint/Checkpoint" index="0" unique_id=60174624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28588867, -0.0055236816, 0)
 shape = SubResource("BoxShape3D_ldmos")
 
-[node name="Checkpoint" parent="checkpoint_001" parent_id_path=PackedInt32Array(1021834811) index="0" unique_id=1166007423 instance=ExtResource("3_df7y4")]
+[node name="Checkpoint" parent="checkpoint_001" parent_id_path=PackedInt32Array(186782829) index="0" unique_id=1166007423 instance=ExtResource("3_df7y4")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="checkpoint_001/Checkpoint" index="0" unique_id=1708356007]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6850586, 0)
 shape = SubResource("BoxShape3D_hd4ns")
 
-[node name="WaveScreen" parent="RED TERM" parent_id_path=PackedInt32Array(1765629598) index="0" unique_id=1880402312 instance=ExtResource("2_8paod")]
+[node name="WaveScreen" parent="RED TERM" parent_id_path=PackedInt32Array(1243930112) index="0" unique_id=1880402312 instance=ExtResource("2_8paod")]
 editable = true
 wave = ExtResource("5_hd4ns")
 
-[node name="Laser" parent="laser" parent_id_path=PackedInt32Array(2088863799) index="0" unique_id=198584673 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser" parent_id_path=PackedInt32Array(638759052) index="0" unique_id=198584673 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 length = 5.0
 
-[node name="Laser" parent="laser_001" parent_id_path=PackedInt32Array(714024158) index="0" unique_id=1228669970 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_001" parent_id_path=PackedInt32Array(1526313685) index="0" unique_id=1228669970 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 length = 5.0
 
-[node name="Laser" parent="laser_002" parent_id_path=PackedInt32Array(1650966050) index="0" unique_id=660352933 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_002" parent_id_path=PackedInt32Array(1327453344) index="0" unique_id=660352933 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 length = 11.0
 
-[node name="Laser" parent="laser_003" parent_id_path=PackedInt32Array(1412361967) index="0" unique_id=792516530 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_003" parent_id_path=PackedInt32Array(852365716) index="0" unique_id=792516530 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 length = 11.0
 
-[node name="Laser" parent="laser_004" parent_id_path=PackedInt32Array(1408688211) index="0" unique_id=244157466 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_004" parent_id_path=PackedInt32Array(810910893) index="0" unique_id=244157466 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 channel = ExtResource("7_7d831")
 length = 2.5
 
-[node name="Laser" parent="laser_005" parent_id_path=PackedInt32Array(409769551) index="0" unique_id=355861353 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_005" parent_id_path=PackedInt32Array(1905571083) index="0" unique_id=355861353 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("3_ldmos")
 channel = ExtResource("8_oaohw")
 length = 2.5
 
-[node name="Laser" parent="laser_006" parent_id_path=PackedInt32Array(1995573863) index="0" unique_id=1889201001 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_006" parent_id_path=PackedInt32Array(1414501571) index="0" unique_id=1889201001 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 channel = ExtResource("7_7d831")
 length = 5.3
 
-[node name="Laser" parent="laser_007" parent_id_path=PackedInt32Array(891100650) index="0" unique_id=845329965 instance=ExtResource("6_fgy21")]
+[node name="Laser" parent="laser_007" parent_id_path=PackedInt32Array(1358255916) index="0" unique_id=845329965 instance=ExtResource("6_fgy21")]
 lock_wave = ExtResource("5_hd4ns")
 channel = ExtResource("7_7d831")
 length = 5.3
 
-[node name="WaveScreen" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="0" unique_id=495807921 instance=ExtResource("2_8paod")]
+[node name="WaveScreen" parent="BLUE TERM" parent_id_path=PackedInt32Array(2110476932) index="0" unique_id=495807921 instance=ExtResource("2_8paod")]
 editable = true
 wave = ExtResource("10_fso0a")
 
-[node name="WaveScreen2" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="1" unique_id=1057771655 instance=ExtResource("2_8paod")]
+[node name="WaveScreen2" parent="BLUE TERM" parent_id_path=PackedInt32Array(2110476932) index="1" unique_id=1057771655 instance=ExtResource("2_8paod")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.4267225, 0)
 wave = ExtResource("5_hd4ns")
 
-[node name="WaveScreen3" parent="BLUE TERM" parent_id_path=PackedInt32Array(1660647035) index="2" unique_id=498571217 instance=ExtResource("2_8paod")]
+[node name="WaveScreen3" parent="BLUE TERM" parent_id_path=PackedInt32Array(2110476932) index="2" unique_id=498571217 instance=ExtResource("2_8paod")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.4267225, 0)
 wave = ExtResource("3_ldmos")
 
 [node name="WinTrigger" parent="." index="21" unique_id=466461081 instance=ExtResource("11_xijnj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.741277, 22.397146, -6.8340564)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.094427, 22.397146, -1.3952537)
 collision_layer = 14
 collision_mask = 14
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WinTrigger" index="1" unique_id=443068811]
 shape = SubResource("SphereShape3D_vnlib")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." index="22" unique_id=1055430946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.916759, 25.26297, -5.991542)
+stream = ExtResource("12_vnlib")
+max_db = -6.0
+autoplay = true
+max_distance = 24.0
+max_polyphony = 2
+bus = &"SFX"
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="." index="23" unique_id=1135094584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.13729, 17.084038, -27.366018)
+stream = ExtResource("12_vnlib")
+max_db = -6.0
+autoplay = true
+max_distance = 24.0
+max_polyphony = 2
+bus = &"SFX"
+
+[node name="AudioStreamPlayer3D3" type="AudioStreamPlayer3D" parent="." index="24" unique_id=1825886127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3002977, -13.674435, -7.3238335)
+stream = ExtResource("12_vnlib")
+max_db = -6.0
+autoplay = true
+max_distance = 24.0
+max_polyphony = 2
+bus = &"SFX"

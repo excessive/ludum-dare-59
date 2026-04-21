@@ -3,6 +3,13 @@
 [ext_resource type="Script" uid="uid://qqts5666b3ad" path="res://scripts/screen_change_button.gd" id="1_le47n"]
 [ext_resource type="Script" uid="uid://cvm75b82n21ak" path="res://scripts/auto_release_mouse.gd" id="2_faxov"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_faxov"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0.63529414)
+
 [node name="Victory" type="Control" unique_id=1208502613]
 layout_mode = 3
 anchors_preset = 15
@@ -24,6 +31,24 @@ offset_right = 71.0
 offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MarginContainer" type="PanelContainer" parent="VBoxContainer" unique_id=1169900470]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_faxov")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer" unique_id=1097108967]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer" unique_id=1961293956]
+layout_mode = 2
+text = "YOU_WON"
+
+[node name="Message" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer" unique_id=268892820]
+custom_maximum_size = Vector2(320, -1)
+layout_mode = 2
+text = "YOU_WON_FLAVOR"
+autowrap_mode = 2
 
 [node name="replay" type="Button" parent="VBoxContainer" unique_id=1405997802]
 layout_mode = 2

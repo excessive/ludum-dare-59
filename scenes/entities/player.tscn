@@ -14,6 +14,7 @@
 [ext_resource type="Resource" uid="uid://cs1w3i27o4b6k" path="res://scenes/data/lidar_white.tres" id="10_pbfsw"]
 [ext_resource type="Resource" uid="uid://bywtlnxkfu5gq" path="res://scenes/data/lidar_fog.tres" id="11_5tmop"]
 [ext_resource type="Resource" uid="uid://xcb26g60b5mm" path="res://scenes/data/player_tool_state.tres" id="12_dchgp"]
+[ext_resource type="AudioStream" uid="uid://cn8hxsfu013r3" path="res://sfx/scan.wav" id="15_ogpgs"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
 shader = ExtResource("2_ivps1")
@@ -249,6 +250,12 @@ alert_channels = Array[ExtResource("6_u1c27")]([ExtResource("10_pbfsw"), ExtReso
 tool_state = ExtResource("12_dchgp")
 sensor = NodePath("../../sensor")
 player = NodePath("../..")
+
+[node name="Scan" type="AudioStreamPlayer" parent="Camera3D/Lidar" unique_id=1322690447]
+stream = ExtResource("15_ogpgs")
+volume_db = -16.0
+pitch_scale = 0.7
+bus = &"SFX"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Camera3D/Lidar" unique_id=2003371208]
 shape = SubResource("BoxShape3D_pb6wq")

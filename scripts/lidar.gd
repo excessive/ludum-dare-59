@@ -178,7 +178,19 @@ func _check_channel_blocks():
 		if channel.blocked != was_blocked:
 			channel_status_updated.emit(channel)
 
-func _scan_current(active: bool):
+func _scan_current(delta: float, active: bool):
+	if tool_state.is_blocked():
+		$Scan.volume_db = lerpf($Scan.volume_db, -20, 1.0 - exp(-4 * delta))
+		$Scan.pitch_scale = lerpf($Scan.pitch_scale, 0.4, 1.0 - exp(-2 * delta))
+	elif not active:
+		$Scan.volume_db = lerpf($Scan.volume_db, -20, 1.0 - exp(-4 * delta))
+		$Scan.pitch_scale = lerpf($Scan.pitch_scale, 0.6, 1.0 - exp(-2 * delta))
+	else:
+		$Scan.volume_db = lerpf($Scan.volume_db, -6, 1.0 - exp(-6 * delta))
+		$Scan.pitch_scale = lerpf($Scan.pitch_scale, 1.0, 1.0 - exp(-4 * delta))
+	if not $Scan.playing:
+		$Scan.play()
+
 	if not tool_state.is_blocked():
 		_scan(channels[current_channel], active)
 	for channel in alert_channels:
@@ -192,7 +204,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"scan"):
 		lidar_idle = 0
 		if lidar_charge > 0:
-			_scan_current(true)
+			_scan_current(delta, true)
 			if not tool_state.is_blocked():
 				# this just isn't adding much to the game, so let's not
 				#lidar_charge = maxf(0, lidar_charge - delta * lidar_drain_rate)
@@ -200,7 +212,7 @@ func _physics_process(delta: float) -> void:
 			charge_updated.emit(lidar_charge)
 		pass
 	else:
-		_scan_current(false)
+		_scan_current(delta, false)
 		lidar_idle = minf(lidar_charge_delay, lidar_idle + delta)
 		if lidar_idle >= lidar_charge_delay:
 			lidar_charge = minf(1, lidar_charge + delta * lidar_charge_rate)
